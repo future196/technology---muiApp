@@ -1,0 +1,338 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<script src="../js/mui.min.js"></script>
+		<script src="../lib/template.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			var order_list = [];
+		</script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">需求订单</h1>
+		</header>
+		<div class="mui-content">
+			<div id="template-area">
+				<div style="margin-top:50px">
+					<p style="text-align: center;">加载中...</p>
+					<p style="text-align: center;">如长时间未加载可尝试下拉刷新</p>
+				</div>
+			</div>
+			<script type="text/html" id="template1">
+				<% for(var i = 0;i<list.length;i++){ %>
+				<ul class="mui-table-view">
+			    <li class="mui-table-view-cell">
+			    	<div class="request-content">
+				    	<div style="width: 100%;">
+				    		<p>申请的需求：<%= list[i].cp_name %></p>
+				    		<div style="display: flex;"><p>申请人：</p><p style="margin-right: 20px;"><%= list[i].member_name %></p></div>
+				    		<%
+									function add0(m){return m<10?'0'+m:m }
+									function format()
+									{
+									//shijianchuo是整数，否则要parseInt转换
+									var time = new Date(list[i].create_time*1000);
+									var y = time.getFullYear();
+									var m = time.getMonth()+1;
+									var d = time.getDate();
+									var h = time.getHours();
+									var mm = time.getMinutes();
+									var s = time.getSeconds();
+									return y+'-'+add0(m)+'-'+add0(d)+' '+add0(h)+':'+add0(mm)+':'+add0(s);
+									}
+								%>
+				    		<div style="display: flex;"><p>申请时间：</p><p><%= format() %></p></div>
+				    		<div style="display: flex;"><p>申请人手机号码：</p><p><%= list[i].member_phone %></p></div>	
+				    	</div>
+				    	<div style="display: flex;"><p style="color: red;">类型：</p><p style="margin-right: 20px;color: red;"><%= list[i].lxing %></p><p style="color: red;">费用：</p><p style="color: red;">3000-8000元</p></div>
+				    	<div style="display: flex;"><p style="color: red;">期限：</p><p style="color: red;"><%= list[i].deadline %></p></div>
+			    	</div>
+			    	<div class="request_bottom">
+			    		<div id="rejected" style="display: flex;float: right;">
+			    			<p id="rejected-reason-<%= list[i].id %>" style="color: red;line-height: 40px;" hidden="hidden">拒绝原因：<%= list[i].reason %></p>
+			    		</div>
+						<% if(list[i].verify_static == "申请中"){%>
+			    		<button class="receive" id="receive-<%= list[i].id %>" onclick="receive(<%= list[i].id %>)">接受</button>
+			    		<button class="reject" id="reject-<%= list[i].id %>" onclick="reject(<%= list[i].id %>)">拒绝</button>
+			    		<% }else if(list[i].verify_static == "已拒绝"){ %>
+			    		<button class="reject" >已拒绝</button>
+			    		<% }else if(list[i].verify_static == "已接受"){ %>
+			    		<button class="receive">已接受</button>
+			    		<% } %>	
+			    	</div>
+			    </li>
+				</ul>
+				<% } %>
+			</script>
+		    
+			
+		</div>
+		<div id="sheet1" class="mui-popover mui-popover-bottom mui-popover-action ">
+			    <!-- 可选择菜单 -->
+			    <ul class="mui-table-view">
+			      	<li id="reject-reason" class="mui-table-view-cell" >
+			        	<a onclick="reject_reason(this)">已有人接了</a>
+			      	</li>
+			      	<li id="reject-reason" class="mui-table-view-cell">
+			        	<a onclick="reject_reason(this)">暂时不想做了</a>
+			      	</li>
+			      	<li id="reject-reason" class="mui-table-view-cell">
+			        	<a onclick="reject_reason(this)">需求有变化</a>
+			      	</li>
+			    </ul>
+			    	<!-- 取消菜单 -->
+			    <ul class="mui-table-view">
+			      	<li class="mui-table-view-cell">
+			        	<a href="#sheet1"><b>取消</b></a>
+			      	</li>
+			    </ul>
+		</div>
+		<script>
+			
+			var user_id;
+			var pages =1;
+			var action_id;
+			var isend = false;
+			var count;
+			
+			// 获取订单信息
+			function search_request(){
+				mui.ajax('http://fcjsz.fosota.com/public/api/index/minedd.html',{
+					data:{
+						id:user_id,
+						page:pages,
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},	              
+					success:function(data){			
+						
+						if(data.code==200){ 
+//								alert(JSON.stringify(data))
+							var apply = data.data.apply;
+							count = data.data.count;
+							for(var i =0;i<apply.length;i++){
+								order_list.push(apply[i]);
+							}
+//								alert(order_list)
+							render()
+						}
+						else if(data.code == 404){
+								document.getElementById("template-area").innerHTML = '<div style="margin-top:50px"><p style="text-align: center;">暂无更多数据</p></div>'
+							}
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						mui.toast("请求失败,请检查网络状态")
+						console.log(type);
+						if(type === "timeout"){
+							mui('.mui-content').pullRefresh().endPullupToRefresh(false); // 结束上拉加载
+							mui('.mui-content').pullRefresh().endPulldown();	// 结束下拉加载
+						}
+					}
+				});
+			}
+			
+			mui.init({
+			    beforeback: function() {
+			　　　　 //获得父页面的webview
+			        var list = plus.webview.currentWebview().opener();
+			　　　　 //触发父页面的自定义事件(refresh),从而进行刷新
+			        mui.fire(list, 'refresh');
+			        //返回true,继续页面关闭逻辑
+			        return true;
+			    }
+			});
+			
+			// 渲染列表
+			function render(){
+//				mui.toast("render")
+				var template1 = document.getElementById("template1").innerHTML;
+				document.getElementById("template-area").innerHTML = template(template1,{list:order_list});
+				mui('.mui-content').pullRefresh().endPullupToRefresh(false); // 结束上拉加载
+				mui('.mui-content').pullRefresh().endPulldown();	// 结束下拉加载
+			}
+			
+			mui.plusReady(function(){
+				user_id = plus.storage.getItem("user_id")
+				search_request()
+			})
+			
+			
+			// 拒绝
+			function reject(id){
+				action_id = id;
+				mui('#sheet1').popover('toggle');
+			}
+			
+			// 拒绝原因
+			function reject_reason(obj){				
+				mui.ajax('http://fcjsz.fosota.com/public/api/index/dealDd.html',{
+					data:{
+						id:action_id,
+						reason:obj.innerHTML,
+						verify_static:2, // 2代表拒绝
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},	              
+					success:function(data){			
+						
+						if(data.code==200){ 
+//							alert(JSON.stringify(data))
+							mui.alert("已拒绝")
+							change_style(obj.innerHTML) // 拒绝后改变样式
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						console.log(type);
+					}
+				});
+			}	
+			
+			// 拒绝后改变样式
+			function change_style(text){
+				var rejected = document.getElementById("rejected-reason-"+action_id)
+				rejected.innerHTML = "拒绝原因："+ text;
+				rejected.removeAttribute("hidden");
+				var reject = document.getElementById("reject-"+action_id);
+				var receive = document.getElementById("receive-"+action_id);
+				reject.setAttribute("hidden","hidden");
+				receive.setAttribute("hidden","hidden");
+				mui('#sheet1').popover('toggle');
+			}
+			
+			// 接受
+			function receive(id){
+				action_id = id;
+				
+				if(receive.innerHTML != "已接受"){
+					mui.confirm("确认接受吗？","系统提示",["确认","取消"],function(e){
+					if(e.index == 0){
+						receive_request();					
+					}
+				})
+				}
+			}
+			
+			// 执行接受
+			function receive_request(){				
+				mui.ajax('http://fcjsz.fosota.com/public/api/index/dealDd.html',{
+					data:{
+						id:action_id,
+						verify_static:1, // 1代表接受2代表拒绝
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},	              
+					success:function(data){			
+						
+						if(data.code==200){ 
+//							alert(JSON.stringify(data))
+							mui.toast("已接受") 
+							var reject = document.getElementById("reject-"+action_id);
+							var receive = document.getElementById("receive-"+action_id);
+							receive.innerHTML = "已接受";
+							reject.setAttribute("hidden","hidden")
+							search_request()
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						console.log(type);
+					}
+				});
+			}	
+			
+			
+			// 下拉刷新
+			mui.init({
+			  pullRefresh : {
+			    container:".mui-content",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+			    down : {
+			      style:'circle',//必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+			      color:'#2BD009', //可选，默认“#2BD009” 下拉刷新控件颜色
+			      height:'50px',//可选,默认50px.下拉刷新控件的高度,
+			      range:'100px', //可选 默认100px,控件可下拉拖拽的范围
+			      offset:'0px', //可选 默认0px,下拉刷新控件的起始位置
+			      auto: false,//可选,默认false.首次加载自动上拉刷新一次
+			      callback :function(){
+			      		order_list = []
+						search_request()
+			      		
+			      } //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+			    }
+			  }
+			});
+			
+			
+			// 上拉加载更多
+			mui.init({
+			  pullRefresh : {
+			    container:".mui-content",//待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等
+			    up : {
+			      height:50,//可选.默认50.触发上拉加载拖动距离
+			      auto:false,//可选,默认false.自动上拉加载一次
+			      contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+			      contentnomore:'没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+			      callback :function(){
+						
+						var current_page = order_list.length/5
+						if(current_page >=1){
+							pages = current_page+1;
+						}
+//						else{
+//							isend = true;
+//							mui('.mui-content').pullRefresh().endPullupToRefresh(false); 
+//						}
+						if(order_list.length >= count){
+							mui.toast("没有更多数据了")
+							mui('.mui-content').pullRefresh().endPullupToRefresh(false); // 结束上拉加载
+						}else{
+//							mui.toast(count)
+							request();
+						}
+						
+			      	}
+			  }
+			}
+			  });
+		</script>
+		<style>
+			.request_bottom{
+				margin-top:5px;
+				border-top: 1px dashed #E8E8E8;
+			}
+			.reject{
+				border-radius: 30px;
+				background: red;
+				color: white;
+				border: 0;
+				float: right;
+				margin-top:5px;
+			}
+			.receive{
+				border-radius: 30px;
+				background: green;
+				color: white;
+				border: 0;
+				float: right;
+				margin: 0 5px;
+				margin-top:5px;
+			}
+		</style>
+	</body>
+
+</html>

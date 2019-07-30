@@ -1,0 +1,503 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../lib/font-awesome-4.7.0/css/font-awesome.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../css/preview.css"/>
+		<script src="../lib/template.js"></script>
+		<script src="../lib/Vue2.0.js"></script>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/mui.zoom.js"></script>
+		<script src="../js/mui.previewimage.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			var cricle_list = []
+		</script>
+	</head>
+
+	<body >
+		<div class="mui-content" style="background: white;padding-bottom:100px ;">
+			
+			<header class="mui-bar mui-bar-nav">
+			    <h1 class="mui-title">发现</h1>
+			    <span class="mui-icon mui-icon-plus" style="float: right;" onclick="add()"></span>
+			</header>
+			<div id="button-group">
+				<div id="message-queues" onclick="select(this)">
+					消息
+					<span id="message-total" style="text-align:center;color:#fff;font-size: 12px;display:inline;width:20px;height:20px;background:red;border-radius:11px;"></span>	
+				</div>
+				<div id="friend" onclick="select(this)">附近宅友</div>
+				<div id="cricle" onclick="select(this)">宅友圈</div>
+			</div>
+			<div class="main" id="vue-area">
+				<div id="template-area">
+					<div style="margin-top:100px">
+						<p style="text-align: center;">加载中...</p>
+						<p style="text-align: center;">如长时间未加载可尝试下拉刷新</p>
+					</div>
+				</div>
+				<script type="text/html" id="template1">
+					<% for(var i = 0;i<list.length;i++){ %>
+					<li>
+			    	<div class="content"> 
+			    		<div class="content-title">
+			    			
+			    			<img src="<%= list[i].member.avatar %>" id="user-icon">
+			    			<b style="margin-left:5px;"><%= list[i].member.member_name %></b>
+			    		</div>
+			    		<div class="content-message">
+			    			<div id="text-<%= list[i].id %>"></div>
+			    			<img src="https://fcjsz.fosota.com/<%= list[i].img %>" data-preview-src="" data-preview-group="1" class="content-img">
+			    			<div class="content-bottom">
+								<%
+									function add0(m){return m<10?'0'+m:m }
+									function format()
+									{
+									//shijianchuo是整数，否则要parseInt转换
+									var time = new Date(list[i].create_time*1000);
+									var y = time.getFullYear();
+									var m = time.getMonth()+1;
+									var d = time.getDate();
+									var h = time.getHours();
+									var mm = time.getMinutes();
+									var s = time.getSeconds();
+									return y+'-'+add0(m)+'-'+add0(d)+' '+add0(h)+':'+add0(mm)+':'+add0(s);
+									}
+								%>
+			    				<p style="font-size: 0.7em;color: #C0C0C0;display: inline;"><%= format() %></p> 
+			    				<div class="content-action" style="display: inline;float: right;">
+			    					<!-- <span id="like-<%= list[i].id %>" onclick="like_action(<%= list[i].id %>)" class="fa fa-thumbs-o-up"></span> -->
+			    					<span id="comment-<%= list[i].id %>" onclick="comment_action(<%= list[i].id %>)" class="fa fa-commenting-o"></span>
+			    				</div>
+			    			</div>
+			    			<% if(list[i].zyq.length != 0){ %>
+			    			<div class="friend-action">
+			    				<!-- <div class="like-area">
+			    					<p class="fa fa-thumbs-up" style="display: inline;">&nbsp;<p id="like-friends" style="font-size: 0.8em;display: inline;">张三,李四</p></p>
+			    				</div> -->
+								
+								<div class="comment-area">
+									<% for(var l =0;l<list[i].zyq.length;l++){ %>
+									<div>
+									<div>
+										<p style="display: inline;" class="comment-name"><%= list[i].zyq[l].member1.member_name %></p>
+										<p style="display: inline;" class="comment-name">:&nbsp;</p>
+										<%
+											var replyname = "'"+list[i].zyq[l].member1.member_name+"'"
+										%>
+										<p style="display: inline;word-break: break-all;" onclick="reply(<%= replyname %>,<%= list[i].zyq[l].member_id %>,<%= list[i].zyq[l].id %>)"><%= list[i].zyq[l].content %></p>
+									</div>
+										<% for(var r =0;r<list[i].zyq[l].zyq_copy.length;r++){ %>
+										<div>
+											<p style="display: inline;" class="comment-name"><%= list[i].zyq[l].zyq_copy[r].member2.member_name %></p>
+											<p style="display: inline;"> 回复 </p>
+											<p style="display: inline;" class="comment-name"><%= list[i].zyq[l].member1.member_name %></p>
+											<p style="display: inline;" class="comment-name">:&nbsp;</p>
+											<%
+											var replyname = "'"+list[i].zyq[l].zyq_copy[r].member2.member_name+"'"
+											%>
+											<p style="display: inline;word-break: break-all;" onclick="reply(<%= replyname %>,<%= list[i].zyq[l].zyq_copy[r].member_id %>,<%= list[i].zyq[l].zyq_copy[r].id %>)"><%= list[i].zyq[l].zyq_copy[r].content %></p>
+										</div>
+										<% } %>
+										</div>
+									<% } %>
+								</div>	
+								
+			    			</div>
+			    			<%}%>
+			    		</div>
+			    	</div>
+					
+			    </li>
+					<% } %>
+				</script>
+			    
+			</div>
+		</div>
+		
+
+		</div>
+		<div id="sheet1" class="mui-popover mui-popover-bottom mui-popover-action ">
+			    <!-- 可选择菜单 -->
+			    <ul class="mui-table-view">
+			      	<!-- <li class="mui-table-view-cell">
+			        	<a href="#">添加宅友</a>
+			      	</li> -->
+			      		<li class="mui-table-view-cell">
+			        	<a href="#" onclick="release_cricle()">发布宅友圈</a>
+			      	</li>
+			    </ul>
+			    	<!-- 取消菜单 -->
+			    <ul class="mui-table-view">
+			      	<li class="mui-table-view-cell">
+			        	<a href="#sheet1"><b>取消</b></a>
+			      	</li>
+			    </ul>
+			</div>
+		<script>
+			
+			var like_friends_list = ["张三","李四"];
+			var action_id;
+			var user_id;
+			var isend = false;
+			var count;
+			
+			// 宅友圈查询获取
+			function search_request(){
+				mui.ajax('http://fcjsz.fosota.com/public/api/index/find.html',{
+				data:{
+				},
+				dataType:'json',//服务器返回json格式数据
+				type:'post',//HTTP请求类型
+				timeout:10000,//超时时间设置为10秒；
+				headers:{'Content-Type':'application/json'},	              
+				success:function(data){
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					if(data.code == 200){
+						console.log(JSON.stringify(data.data))
+//						alert(JSON.stringify(data.data))
+						
+//						mui.toast("cricle post 200")
+						var quan = data.data.quan;
+						count = data.data.count;
+						for(var i = 0;i<quan.length;i++){
+							if((quan[i].member.avatar).indexOf("/public") != -1){
+								quan[i].member.avatar = "https://fcjsz.fosota.com"+quan[i].member.avatar;
+							}
+							cricle_list.push(quan[i])
+						}
+						render()
+						for(var i =0;quan.length;i++){
+
+							document.getElementById("text-"+quan[i].id).innerHTML = "<p>"+quan[i].content+"</p>";
+						}
+						}
+				},
+				error:function(xhr,type,errorThrown){
+					//异常处理；
+					mui.toast("请求失败,请检查网络状态")
+					console.log(type);
+//					console.log(type);
+					mui('.main').pullRefresh().endPullupToRefresh(false); // 结束上拉加载
+					mui('.main').pullRefresh().endPulldown();	// 结束下拉加载
+				}
+			});
+			}
+			
+			// 刷新消息处的消息数
+			function change_count(number){
+				document.getElementById("message-total").innerHTML = number;
+			}
+			
+			// 下拉刷新
+			mui.init({
+			  pullRefresh : {
+			    container:".main",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+			    down : {
+			      style:'circle',//必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+			      color:'#2BD009', //可选，默认“#2BD009” 下拉刷新控件颜色
+			      height:'50px',//可选,默认50px.下拉刷新控件的高度,
+			      range:'100px', //可选 默认100px,控件可下拉拖拽的范围
+			      offset:'0px', //可选 默认0px,下拉刷新控件的起始位置
+			      auto: false,//可选,默认false.首次加载自动上拉刷新一次
+			      callback :function(){
+			      	setTimeout(
+		      			function(){
+							cricle_list = []
+							search_request()
+		      			},300);
+			      		
+			      		
+			      } //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+			    }
+			  }
+			});
+			
+			
+			// 上拉加载更多
+			mui.init({
+			  pullRefresh : {
+			    container:".main",//待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等
+			    up : {
+			      height:50,//可选.默认50.触发上拉加载拖动距离
+			      auto:false,//可选,默认false.自动上拉加载一次
+			      contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+			      contentnomore:'没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+			      callback :function(){
+						var current_page = cricle_list.length/5
+						if(current_page >=1){
+							pages = current_page+1;
+						}
+//						else{
+//							isend = true;
+//							mui('.main').pullRefresh().endPullupToRefresh(false); 
+//						}
+						if(cricle_list.length >= count){
+							mui.toast("没有更多数据了")
+							mui('.main').pullRefresh().endPullupToRefresh(false); // 结束上拉加载
+						}else{
+//							mui.toast(count)
+							search_request();
+						}
+						
+			      	}
+			  }
+			}
+			  });
+			
+			// 模板渲染
+			function render(){
+//				mui.toast("render")
+				var template1 = document.getElementById('template1').innerHTML;
+				document.getElementById('template-area').innerHTML = template(template1, {list:cricle_list});
+				mui('.main').pullRefresh().endPullupToRefresh(false); // 结束上拉加载
+				mui('.main').pullRefresh().endPulldown();	// 结束下拉加载
+			}
+			
+			mui.plusReady(function(){
+				user_id = plus.storage.getItem("user_id")
+				search_request()
+			})
+			
+// 			
+
+			function select(obj){
+				plus.webview.hide("cricle.html");		
+				plus.webview.show(obj.id + ".html")	// 显示当前点击页面
+			}
+			
+			function add(){
+				mui('#sheet1').popover('toggle');
+			}
+			
+			function like_action(id){
+				action_id = id;
+				var like_friends = document.getElementById("like-friends");
+				var like_button = document.getElementById("like-"+id)
+				if(like_button.className != "fa fa-thumbs-up"){
+//					mui.toast("你点赞了")
+					like_button.className = "fa fa-thumbs-up"
+					like_friends.innerHTML += ","+"王五";
+				}
+				else{
+//					mui.toast("你取消点赞了")
+					like_button.className = "fa fa-thumbs-o-up"
+					like_friends.innerHTML = "张三,李四";
+				}
+			}
+			
+			// 回复评论
+			function reply(member_name,member_id,id){
+				action_id = id;
+//				alert(member_name+","+member_id+","+action_id);
+				mui.prompt(member_name,"请输入回复内容","回复",["回复","取消"],function(e){
+					if(e.index == 1){
+//						mui.toast("取消了")	
+					}
+					else{
+						reply_request(e.value,member_id)
+					}
+				})
+			}
+			
+			// 回复评论请求
+			function reply_request(reply_content,member_id){
+//				alert(user_id+"，"+reply_content+"，"+member_id,+","+action_id)
+				mui.ajax('http://fcjsz.fosota.com/public/api/index/huifu.html',{
+					data:{
+						uid:user_id,
+						content:reply_content,
+						f_id:member_id,
+						p_user:action_id,
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},	              
+					success:function(data){
+//						alert(JSON.stringify(data))
+						if(data.code == 200){
+							mui.alert("回复成功","回复评论")
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						mui.alert(type);
+					}
+				});
+			}
+			
+			// 点击评论按钮
+			function comment_action(id){
+				action_id = id
+				mui.prompt("说点什么呢","请输入评论内容","宅友圈评论",["评论","取消"],function(e){
+					if(e.index == 1){
+//						mui.toast("取消了")	
+					}
+					else{
+						comment_request(e.value)
+					}
+				})
+			}
+				
+			// 发布评论请求
+			function comment_request(comment_content){
+//				alert(user_id+"，"+comment_content+"，"+action_id)
+				mui.ajax('http://fcjsz.fosota.com/public/api/index/pinglun.html',{
+					data:{
+						uid:user_id,
+						content:comment_content,
+						f_id:action_id,
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},	              
+					success:function(data){
+						if(data.code == 200){
+							mui.alert("评论成功","评论宅友圈")
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						mui.alert(type);
+					}
+				});
+			}
+			
+			// 发布宅友圈
+			function release_cricle(){
+				mui('#sheet1').popover('toggle');
+				mui.openWindow({
+					url:"../release/release-cricle.html",
+					id:"release-cricle.html",
+					createNew:true,
+					extras:{
+					}
+				})
+			}
+			
+		</script>
+		<script type="text/javascript">
+			mui.previewImage();
+		</script>
+		<style>
+			body{
+				background: white;
+			}
+			
+			.main{
+				margin-top: 85px;
+			}
+			
+			.content-title b{
+				color: deepskyblue;
+			}
+			li{
+				list-style: none;
+			}
+			#user-icon{
+				width: 40px;
+				height: 40px;
+			}
+			.content{
+				padding:10px;
+				/*height: auto;*/
+				/*max-height: 1000px;*/
+				border-bottom: 1px solid #DEDEDE;
+			}
+			
+			.content-title{
+				display: flex;
+				line-height: 40px;
+			}
+			.content-message{
+				padding-left: 40px;
+				padding-right: 10px;
+			}
+			.content-img{
+				max-height: 300px;
+				max-width: 100%;
+			}
+			
+			.content-bottom{
+				/* display: flex; */
+			}
+			
+
+			.content-action span{
+				margin-left:20px;
+				display: inline;
+			}
+			
+			.friend-action{
+				width: 100%;
+				background: #F7F7F7;
+				padding: 10px;
+			}
+			.like-area{
+				border-bottom: 1px solid lightgrey;
+			}
+			
+			.comment-area{
+				padding-top: 3px;
+			}
+			
+			.comment-name{
+				color: deepskyblue;
+			}
+			
+			/*#add-article{
+				position: fixed;
+				bottom: 82px;
+				width: 100%;
+				text-align: center;
+			}
+			#add-article span{
+				font-size: 3em;
+				color: deepskyblue;
+			}*/
+
+
+			#button-group{
+				width: 100%;
+				height: 40px;
+				margin-top:45px;
+				display: flex;
+				position: fixed;
+				top:0;
+				background: white;
+				z-index: 9;
+			}
+			#button-group div{
+				width: 33.3%;
+				text-align: center;
+				line-height: 40px;
+				border-radius: 4px;
+				
+			}
+			#cricle{
+				background: white;
+				color: deepskyblue;
+			}
+			#message-queues{
+				background: deepskyblue;
+				color: white;
+			}
+			#friend{
+				background: deepskyblue;
+				color: white;
+			}
+
+			p{
+				word-break: break-all; /* 解决p标签输入纯数字不会换行*/
+			}
+		</style>
+	</body>
+
+</html>

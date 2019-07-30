@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link href="lib/font-awesome-4.7.0/css/font-awesome.css" rel="stylesheet"/>
+    <script type="text/javascript" charset="utf-8">
+    
+      	mui.init();
+    </script>
+</head>
+<body>
+
+
+	<!--底部导航条-->
+	<nav class="mui-bar mui-bar-tab" id="nav-tabbar">
+	    <a class="mui-tab-item mui-active" id="home">
+			<span class="mui-icon fa fa-home"></span>
+			<span class="mui-tab-label"  >首页</span>
+	    </a>
+	    <a class="mui-tab-item" id="developer">
+			<span class="mui-icon fa fa-group"></span>
+			<span class="mui-tab-label"  >攻城狮</span>
+	    </a>
+	    <a class="mui-tab-item" id="search">
+	    	
+			<span class="mui-icon fa fa-eye"></span>		
+			<span class="mui-tab-label"  >发现</span>
+			<div id="search_button" class=""></div>
+			
+	    </a>
+	    <a class="mui-tab-item" id="need">
+			<span class="mui-icon fa fa-file-text"></span>
+			<span class="mui-tab-label"  >需求</span>
+	    </a>
+	    <a class="mui-tab-item" id="user">
+			<span class="mui-icon fa fa-user"></span>
+			<span class="mui-tab-label"  >我的</span>
+			<div id="mine_button" class=""></div>
+	    </a>
+   </nav>
+	<style type="text/css">
+		.mui-bar-tab .mui-tab-item.mui-active {
+			color: deepskyblue;
+			/* 修改mui导航栏的颜色 */
+		}
+		
+		.mui-bar .mui-icon:active {
+			opacity: 1;
+		}
+	</style>
+	<script>
+		
+		var location_addr;
+		var user_id;
+		
+// 		var defaultpage = "home.html";	// 定义默认选项卡子页面
+// 		
+// 		// 定义所有子页面
+// 		var subpages = ['home.html', 'developer.html', 'search.html','need.html','user.html'];
+// 		
+// 		// 页面加载完成后加载子页面
+// 		mui.plusReady(function(){
+// 			var current =  plus.webview.currentWebview();	//获取当前页面的窗口对象
+// 			
+// 			// 加载所有子页面
+// 			for(var i =0;i<subpages.length;i++){
+// 				var sub = plus.webview.create(
+// 					subpages[i], 
+//                     subpages[i], 
+//                     {
+//                         top: '0px', 
+//                         bottom: '50px' 
+//                     }
+// 				);
+// 				// 除默认页面外，其他子页面隐藏
+// 				if(subpages[i] != defaultpage){
+// 					sub.hide();
+// 				}
+// 				current.append(sub);	// 子页面加入窗口对象
+// 			}
+// 		});
+// 		
+// 		// 创建点击事件
+// 		mui("#nav-tabbar").on("tap","a",function(e){
+// 			plus.webview.hide(defaultpage);		// 隐藏上一个子页面
+// 			plus.webview.show(this.id + ".html")	// 显示当前点击页面
+// 			defaultpage = this.id + ".html";	// 记录当前点击页面
+// 		})
+
+
+		// 判断登录状态
+		function login_status(){
+			if(plus.storage.getItem("login_status")){
+				return;
+			}
+			else{
+				plus.storage.setItem("login_status","false")
+			}
+		}
+		
+		// 启动欢迎页
+		function face(){
+			
+			if(plus.storage.getItem("first_start")){
+				return;
+			}else{
+				plus.storage.setItem("first_start","true")
+				mui.openWindow({
+					url:"guide.html",
+					id:"guide.html",
+					createNew:true,
+				})	
+			}			
+		}
+		
+		// 使用websocket被动接受更新信息
+		ws =  new WebSocket("ws://fcjsz.fosota.com:7272");
+	    ws.onmessage=function(e){
+//	    	mine_button_red(1)
+			console.log(JSON.stringify(e.data))
+//			alert(JSON.stringify(e.data))
+			check_grade()
+			var webview = plus.webview.getWebviewById("user.html");
+			webview.evalJS("check_grade()")
+	    }
+	    
+	    
+	    // 检查是否有新版本更新
+		function check_grade(){
+			mui.getJSON("manifest.json", null, function(manifest){
+				versionName = manifest.version.name;
+				versionCode = Number(manifest.version.code);
+				// mui.toast("版本名称："+versionName+"，版本code："+versionCode);
+			
+				mui.ajax('http://fcjsz.fosota.com/public/api/version/index.html',{
+					data:{
+						
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'get',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					success:function(data){
+						// alert(JSON.stringify(data))
+						
+						if(versionCode < data.apk.varsion_num){
+							mine_button_red(1)
+						}else{
+							mine_button_red(0)
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						
+					}
+				});
+			});
+			
+		}
+	
+		
+		// 页面加载完成后加载子页面
+		mui.plusReady(function () {
+			face()
+			login_status()
+		    var current_view =  plus.webview.currentWebview();
+			var sub = plus.webview.create(
+				"home.html",
+				"home.html",
+				{
+					top: '0px', 
+					bottom: '51px' 
+				}
+			);
+			current_view.append(sub);
+		})
+		
+		
+		// 获取经纬度（javascript百度地图api）
+		function long_lati_request(){
+			plus.geolocation.getCurrentPosition(translatePoint,function(e){
+//              mui.toast("异常:" + e.message);
+   			});
+		}
+		function translatePoint(position){
+			currentLon = position.coords.longitude;
+		 	currentLat= position.coords.latitude;
+		 	location_addr = currentLon +","+currentLat;
+		 	update_location()
+		}
+		
+		// 更新经纬度
+		function update_location(){
+			mui.ajax('http://fcjsz.fosota.com/public/api/index/update_location.html',{
+				data:{
+					id:plus.storage.getItem("user_id"),
+					location:location_addr,
+				},
+				dataType:'json',//服务器返回json格式数据
+				type:'post',//HTTP请求类型
+				timeout:10000,//超时时间设置为10秒；
+				headers:{'Content-Type':'application/json'},	              
+				success:function(data){	
+//					alert(JSON.stringify(data))
+					if(data.code == 200){
+						
+					}
+					
+				},
+				error:function(xhr,type,errorThrown){
+					//异常处理；
+					console.log(type);
+				}
+			});
+		}
+
+
+		// 点击后再加载机制
+		// 创建点击事件
+		mui("#nav-tabbar").on("tap","a",function(e){
+			var current_view =  plus.webview.currentWebview();
+	
+			if(plus.webview.getWebviewById(this.id+".html")){
+				plus.webview.show(this.id + ".html")
+			}else{
+				var sub = plus.webview.create(
+					this.id+".html",
+					this.id+".html",
+					{
+						top: '0px', 
+						bottom: '51px' 
+					}
+				);
+				current_view.append(sub);
+			}
+			long_lati_request() //更新附近宅友经纬度
+			}
+			)
+		
+//		// 判断是否有新消息在发现按钮处添加红点
+//		function search_button_red(){
+//			mui.toast("新消息")
+//			// 1为有消息，0为无消息
+//			if(is_message == 1){
+//				document.getElementById("search_button").className = "red_spot"
+//			}else{
+//				document.getElementById("search_button").className = ""
+//			}
+//		}
+//		
+//		// 判断是否有新消息在个人中心按钮处添加红点
+//		function mine_button_red(is_update){
+//			// 1为有更新，0为无更新
+//			if(is_update == 1){
+//				document.getElementById("mine_button").className = "red_spot"
+//			}else{
+//				document.getElementById("mine_button").className = ""
+//			}
+//		}
+		
+		
+		// 判断是否有新消息在发现按钮处添加红点
+		function search_button_red(is_message){
+			// 1为有消息，0为无消息
+			if(is_message == 1){
+				document.getElementById("search_button").className = "red_spot"
+			}else{
+				document.getElementById("search_button").className = ""
+			}
+		}
+		
+		// 判断是否有新消息在发现按钮处添加红点
+		function mine_button_red(is_update){
+			// 1为有更新，0为无更新
+			if(is_update == 1){
+				document.getElementById("mine_button").className = "red_spot"
+			}else{
+				document.getElementById("mine_button").className = ""
+			}
+		}
+	
+
+	</script>
+	
+	<style type="text/css">
+		.red_spot{
+			position: absolute;
+			top: 10%;
+			margin-left: 50px;
+			width:10px;
+			height:10px;
+			border-radius:10px;
+			background: red;
+			z-index:100;
+			}
+	</style>
+
+</body>
+</html>

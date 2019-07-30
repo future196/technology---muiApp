@@ -1,0 +1,345 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="lib/font-awesome-4.7.0/css/font-awesome.css" />
+		<link href="css/preview.css" rel="stylesheet" />	
+		<script src="js/mui.min.js"></script>
+		<!--<script src="lib/Vue2.0.js"></script>-->
+		<script src="js/mui.zoom.js"></script>
+		<script src="js/mui.previewimage.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			var need_info = {}
+		</script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">需求详情</h1>
+		    <span onclick="chat()" style="font-size: 1em;border-radius:100px;margin:5px;color: white;float: right;height:80%;background: dodgerblue;" class="mui-icon mui-icon-chatboxes">咨询</span>
+		</header>
+		<div class="mui-content">
+		    <img id="need_picture" src="" data-preview-src="" data-preview-group="1" style="padding: 5px;">
+		    <div id="detail">
+		    	<p><b>产品名称：</b><font id="name">加载中...</font></span>
+		    	<p><b>类型：</b><font id="type" color="red">加载中...</font></p>
+		    	<p><b>预算：</b><font id="cost" color="red">加载中...</font></p>
+		    	<p><b>期限：</b><font id="limit">加载中...</font></p>
+		    	<p><b>描述：</b><font id="describe">加载中...</font></p>
+		    	<i class="fa fa-comments-o" aria-hidden="true"></i>
+		    </div>
+		</div>
+		
+		<div id="button-group">
+			<button id="telephone-button">
+				<span class="mui-icon mui-icon-phone"></span>
+				<span id="telephone">****</span>
+			</button>
+			<button id="like">加入收藏</button>
+			<button id="request">我要申请</button>
+		</div>
+		    
+		<script>
+			var user_id;
+			var id;
+			var member_id;
+			var login_status;
+			
+			
+			
+			// 获取详情
+			function request(){
+//				mui.toast(user_id+","+id)
+				mui.ajax('http://fcjsz.fosota.com/public/api/index/prolist.html',{
+				data:{
+					uid:user_id, 
+					id:id,
+				},
+				dataType:'json',//服务器返回json格式数据
+				type:'post',//HTTP请求类型
+				timeout:10000,//超时时间设置为10秒；
+				headers:{'Content-Type':'application/json'},	              
+				success:function(data){
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					if(data.code == 200){
+						
+						need_info = data.data
+//						alert(JSON.stringify(data.data.info.cpmember_id))
+						member_id = data.data.info.cpmember_id
+						
+						render()
+						}
+				},
+				error:function(xhr,type,errorThrown){
+					//异常处理；
+					mui.toast("请求失败,请检查网络状态")
+					console.log(type);
+					plus.nativeUI.closeWaiting();
+				}
+			});
+			}
+			
+			function render(){
+				var name = document.getElementById("name");
+				var type = document.getElementById("type");
+				var cost = document.getElementById("cost");
+				var limit = document.getElementById("limit");
+				var describe = document.getElementById("describe");
+				var picture = document.getElementById("need_picture");
+				var telephone_button = document.getElementById("telephone");
+				var like = document.getElementById("like");
+				var request = document.getElementById("request");
+				name.innerHTML = need_info.info.cp_name;
+				type.innerHTML = need_info.info.lx;
+				cost.innerHTML = need_info.info.bg;
+				limit.innerHTML = need_info.info.dl;
+				describe.innerHTML = need_info.info.cp_content;
+				var img = new Image();
+				img.src = 'http://fcjsz.fosota.com/'+need_info.info.img;;
+				img.onload = function(){ //图片下载完毕时异步调用callback函数。
+//					callback.call(img); // 将callback函数this指针切换为img。
+					picture.src = img.src;
+				
+				
+//				picture.src = 'http://fcjsz.fosota.com/'+need_info.info.img;
+				telephone_button.innerHTML = need_info.info.member_phone;
+				if(need_info.star == null){
+					like.innerHTML = "加入收藏"
+				}
+				else{
+					like.innerHTML = "已收藏"
+				}
+				};
+				var currentView = plus.webview.currentWebview();
+				currentView.show('slide-in-right', 300);
+				plus.nativeUI.closeWaiting();
+			}
+
+			mui.plusReady(function(){
+				user_id = plus.storage.getItem("user_id");
+				id = plus.storage.getItem("need_id");
+				login_status = plus.storage.getItem("login_status");
+				request();
+			})
+			
+			// 咨询
+			function chat(){
+				if(login_status == "false"){
+					mui.alert("请先登录哦！","咨询")
+				}else{
+					plus.storage.setItem('order_id', member_id+""); 
+				mui.openWindow({
+					url:"dialog.html",
+					id:'dialog.html',
+					createNew:true,
+				})		
+				}
+				
+			}
+			
+			
+			// 电话拨打
+			var tel_button = document.getElementById("telephone-button");
+			tel_button.addEventListener("tap",function(){
+				var telephone = document.getElementById("telephone").innerHTML;
+				var str = telephone.toString();
+				if(str.indexOf("*") != -1){
+//					if(request_button.innerHTML == "已申请"){
+//						mui.alert("请等待申请通过哦","系统提示")
+//					}
+//					else{
+//						mui.alert("请先申请哦","系统提示")
+//					}
+					mui.alert("申请通过后方可联系哦","电话联系")
+				}
+				else{
+					mui.confirm("开始拨打电话吗？","系统提示",["否","是"],function(e){
+						if(e.index == 1){		
+							//TODO：执行电话拨打 
+							plus.device.dial(str,false);
+						}
+						else{
+							mui.toast("您已取消")
+						}
+					})
+				}
+				
+			})
+			
+			// 收藏方法
+			function like_send(){
+				if(login_status == "false"){
+					mui.alert("请先登录哦！","咨询")
+				}else{
+				mui.ajax('http://fcjsz.fosota.com/public/api/index/star.html',{
+				data:{
+					uid:user_id, 
+					pid:id,
+					type:2,
+				},
+				dataType:'json',//服务器返回json格式数据
+				type:'post',//HTTP请求类型
+				timeout:10000,//超时时间设置为10秒；
+				headers:{'Content-Type':'application/json'},	              
+				success:function(data){
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					if(data.code == 200){
+//						alert(JSON.stringify(data))
+						var like_button = document.getElementById("like");
+						mui.alert("收藏成功！","加入收藏")	
+						like_button.innerHTML = "已收藏";
+						}
+				},
+				error:function(xhr,type,errorThrown){
+					//异常处理；
+					mui.toast("收藏失败,请检查网络状态")
+					console.log(type);
+				}
+			});
+			}
+			}
+			
+//			// 取消收藏方法
+//			function like_send(){
+//				alert(user_id+"--"+id)
+//				mui.ajax('http://fcjsz.fosota.com/public/api/index/star.html',{
+//				data:{
+//					uid:user_id, 
+//					pid:id,
+//					type:1,
+//				},
+//				dataType:'json',//服务器返回json格式数据
+//				type:'post',//HTTP请求类型
+//				timeout:10000,//超时时间设置为10秒；
+//				headers:{'Content-Type':'application/json'},	              
+//				success:function(data){
+//					//服务器返回响应，根据响应结果，分析是否登录成功；
+//					if(data.code == 200){
+//						mui.toast("like post 200")
+////						alert(JSON.stringify(data))
+//						var like_button = document.getElementById("like");
+//						mui.alert("取消收藏成功！","系统提示")	
+//						like_button.innerHTML = "加入收藏";
+//						}
+//				},
+//				error:function(xhr,type,errorThrown){
+//					//异常处理；
+//					mui.toast("请求失败")
+//					console.log(type);
+//					alert(type)
+//				}
+//			});
+//			}
+			
+			// 需求申请
+			function need_request(){
+				if(login_status == "false"){
+					mui.alert("请先登录哦！","需求申请")
+				}else{
+					mui.toast("申请中..")
+					mui.ajax('http://fcjsz.fosota.com/public/api/index/mineapply.html',{
+					data:{
+						uid:user_id, 
+						pid:id,
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},	              
+					success:function(data){
+						//服务器返回响应，根据响应结果，分析是否登录成功；
+						if(data.code == 200){
+							mui.toast("need_info_request post 200")
+							alert(data.msg,"需求申请")
+							}
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						mui.toast("申请失败,请检查网络状态")
+						console.log(type);
+					}
+				});
+				}
+			}
+			
+			var like_button = document.getElementById("like");
+			like_button.addEventListener("tap",function(){
+				if(like_button.innerHTML == "加入收藏"){
+					//TODO：执行收藏请求					
+					like_send()
+	
+				}
+				else{
+					mui.alert("请勿重复收藏！","系统提示")		
+				}
+					
+			})
+			
+			var request_button = document.getElementById("request");
+			request_button.addEventListener("tap",function(){
+					
+					need_request()
+					
+			})
+		</script>
+		<script type="text/javascript">
+			mui.previewImage();
+		</script>
+
+		<style>
+			img{
+				width:100%;
+			}
+			b{
+				color: #000000;
+			}
+
+			#button-group{
+				display: flex;
+				text-align: center;
+				height:40px;
+				width: 100%;
+				line-height: 40px;
+				position: fixed;
+				bottom:0px;
+			}
+			#button-group button{
+				border:0;
+			}
+			
+			#button-group #telephone-button{
+
+				width: 50%;
+				background: lightgrey;
+				border-radius: 3px;
+
+			}
+			#button-group #like{
+				width: 25%;
+				background: red;
+				border-radius: 3px;
+				color:white;
+			}
+			#button-group #request{
+				width: 25%;
+				background: deepskyblue;
+				border-radius: 3px;
+				color:white;
+			}
+			
+			
+			#detail{
+				margin:10px;
+				margin-bottom:50px;
+			}
+
+		</style>
+	</body>
+
+</html>

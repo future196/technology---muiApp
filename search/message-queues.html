@@ -1,0 +1,557 @@
+<!doctype html>
+<html>
+ 
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../css/message-queues.css"/>
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.min.js"></script>
+		<script type="text/javascript">
+			mui.init()
+		</script>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			    <h1 class="mui-title">发现</h1>
+			    <span class="mui-icon mui-icon-plus" style="float: right;" onclick="add()"></span>
+		</header>
+		<div class="mui-content">
+			<div id="button-group">
+				<div id="message-queues" onclick="select(this)">消息
+					<span id="message-total" style="text-align:center;color:#fff;font-size: 12px;display:inline;width:20px;height:20px;background:red;border-radius:11px;"></span>
+				</div>
+				<div id="friend" onclick="select(this)">附近宅友</div>
+				<div id="cricle" onclick="select(this)">宅友圈</div>
+			</div>
+			<p id="login_null" style="text-align: center;margin-top: 140px;">您还未登录，请先登录才可查看哦</p>
+			<div style="margin-top: 40px;" id="main-content" hidden="hidden">	
+				
+				
+				<!--<ul class="mui-table-view">
+					<li class="mui-table-view-cell">
+						<div class="" onclick="entry('+content.toid+')">
+							<p><img src="'+content.head_url+'" style="width: 40px;height: 40px;float: left;margin:0 10px;"/></p>
+							<div>
+								<p style="display: inline;"><span style="color: #000;">旭伟</span> <img src="'+content.sex+'" style="width: 11px;height: 10px;margin-left: 10px;"/></p>
+								<span style="float: right;margin-right: 10px;text-align:center;color:#fff;font-size: 10px;display:inline;width:20px;height:20px;background:red;border-radius:11px;padding-left:0px;padding-top:1px;">99+</span>
+							</div>
+						   <div>
+							   <p style="display: inline;">你好</p>
+							   <span style="float: right;display:inline;margin-right: 10px;color: #b8b8b8;font-size: 14px;">2016-12-11</span>
+						   </div>
+						
+						</div>	
+					</li>
+				</ul>-->
+				
+		</div>	
+			</div>
+			<div id="sheet1" class="mui-popover mui-popover-bottom mui-popover-action ">
+			    <!-- 可选择菜单 -->
+			    <ul class="mui-table-view">
+			      	<!-- <li class="mui-table-view-cell">
+			        	<a href="#">添加宅友</a>
+			      	</li> -->
+			      		<li class="mui-table-view-cell">
+			        	<a href="#" onclick="release_cricle()">发布宅友圈</a>
+			      	</li>
+			    </ul>
+			    	<!-- 取消菜单 -->
+			    <ul class="mui-table-view">
+			      	<li class="mui-table-view-cell">
+			        	<a href="#sheet1"><b>取消</b></a>
+			      	</li>
+			    </ul>
+			</div>	
+		<script>
+			
+//			window.addEventListener('refresh', function(e){//执行刷新
+//			    location.reload();
+//			});
+			
+			var members;
+			var fromid;
+			var API_URL = "https://fcjsz.fosota.com/public/api/chat/";
+//	    	ws =  new WebSocket("ws://fcjsz.fosota.com:7272");
+			
+			
+			mui.plusReady(function(){
+				
+				action()
+			})
+			
+			// 发布宅友圈
+			function release_cricle(){
+				mui('#sheet1').popover('toggle');
+				mui.openWindow({
+					url:"../release/release-cricle.html",
+					id:"release-cricle.html",
+					createNew:true,
+					extras:{
+					}
+				})
+			}
+			
+			// 下拉刷新
+			mui.init({
+			  pullRefresh : {
+			    container:".mui-content",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+			    down : {
+			      style:'circle',//必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+			      color:'#2BD009', //可选，默认“#2BD009” 下拉刷新控件颜色
+			      height:'50px',//可选,默认50px.下拉刷新控件的高度,
+			      range:'100px', //可选 默认100px,控件可下拉拖拽的范围
+			      offset:'0px', //可选 默认0px,下拉刷新控件的起始位置
+			      auto: false,//可选,默认false.首次加载自动上拉刷新一次
+			      callback :function(){
+			      	setTimeout(
+		      			function(){
+		      			action()
+		      			
+		      			},300);
+			      		
+			      		
+			      } //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+			    }
+			  }
+			});
+
+			
+			
+			
+
+		function action(){
+
+			var login_status = plus.storage.getItem("login_status");
+			if(login_status == "false"){
+				document.getElementById("login_null").removeAttribute("hidden")
+				document.getElementById("main-content").setAttribute("hidden","hidden")
+			}else if(login_status == "true"){
+				document.getElementById("main-content").removeAttribute("hidden")
+				document.getElementById("login_null").setAttribute("hidden","hidden")
+				member = plus.storage.getItem('member');
+				members = JSON.parse(member);
+				fromid = members.id;	
+//				var API_URL = "https://fcjsz.fosota.com/public/api/chat/";
+		    	ws =  new WebSocket("ws://fcjsz.fosota.com:7272");
+		    	ws.onmessage=function(e){
+// 		    		var login_status = plus.storage.getItem("login_status");
+// 		    		if(login_status == "false"){
+// 		    			document.getElementById("login_null").removeAttribute("hidden")
+// 						document.getElementById("main-content").setAttribute("hidden","hidden")
+// 		    		}else if(login_status == "true"){
+// 						document.getElementById("main-content").removeAttribute("hidden")
+// 		    			document.getElementById("login_null").setAttribute("hidden","hidden")
+		    			var message = eval("("+ e.data+")");
+				        switch (message.type){
+//				        	
+				            case  "init":
+				                var bild = '{"type":"bind","fromid":"'+fromid+'"}';
+				                ws.send(bild);
+				                list();
+				                return;
+				            case "text":
+				            
+				                $(".main").html("");
+				                list();
+				                return;
+				            case "say_img":
+				                $(".main").html("");
+				                list();
+				                return;
+				        }
+			    		// }
+		    		}
+			    }	
+			    function list(){
+		    		mui.ajax(API_URL+"get_list",{
+						data:{"id":fromid},
+						dataType:'json',//服务器返回json格式数据
+						type:'post',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						headers:{'Content-Type':'application/json'},	              
+						success:function(res){	
+//							mui.alert(JSON.stringify(res))
+							document.getElementById("main-content").innerHTML = ""
+							var total_count = 0;
+		                    $.each(res,function(index,content){
+		                    	
+		                    	function add0(m){return m<10?'0'+m:m }
+								function format()
+									{
+									//shijianchuo是整数，否则要parseInt转换
+									var time = new Date(content.last_message.time*1000);
+									var y = time.getFullYear();
+									var m = time.getMonth()+1;
+									var d = time.getDate();
+									var h = time.getHours();
+									var mm = time.getMinutes();
+									var s = time.getSeconds();
+									return y+'-'+add0(m)+'-'+add0(d)+' '+add0(h)+':'+add0(mm);
+									}
+		                    
+		                    	if((content.head_url).indexOf("/public") != -1){
+									content.head_url = "https://fcjsz.fosota.com"+content.head_url;
+								}
+		                    	var html = '<ul class="mui-table-view">'+
+												'<li class="mui-table-view-cell">'+
+													'<div class="" onclick="entry('+content.toid+')">'+
+														'<p><img src="'+content.head_url+'" style="width: 40px;height: 40px;float: left;margin:0 10px;"/></p>'+
+														'<div>'+
+														   '<p style="display: inline;"><span style="color: #000;">'+content.membername+'</span> <img src="'+content.sex+'" style="width: 11px;height: 13px;margin-left: 10px;"/></p>';
+															
+															<!-- '<span style="float: right;margin-right: 10px;text-align:center;color:#fff;font-size: 10px;display:inline;width:20px;height:20px;background:red;border-radius:11px;padding-left:0px;padding-top:1px;">'+content.countNoread+'</span>'+ -->
+															
+											if(content.countNoread == 0){
+													html += ''+
+													'</div>'+
+														 '<div>'+
+															'<p style="display: inline;">'+replace_em(content.last_message.content)+'</p>'+
+															'<span style="float: right;display:inline;margin-right: 10px;color: #b8b8b8;font-size: 14px;">'+format()+'</span>'+
+														'</div>'+
+													'</div>'+	
+												'</li>'+
+											'</ul>';
+											}else if(content.countNoread >0 && content.countNoread < 100){
+												total_count += parseInt(content.countNoread)
+													html += '<span style="float: right;margin-right: 10px;text-align:center;color:#fff;font-size: 10px;display:inline;width:20px;height:20px;background:red;border-radius:11px;padding-left:0px;padding-top:1px;">'+content.countNoread+'</span>'+
+													'</div>'+
+														 '<div>'+
+															'<p style="display: inline;">'+replace_em(content.last_message.content)+'</p>'+
+															'<span style="float: right;display:inline;margin-right: 10px;color: #b8b8b8;font-size: 14px;">'+format()+'</span>'+
+														'</div>'+
+													'</div>'+	
+												'</li>'+
+											'</ul>';
+											}else if(content.countNoread>=100){
+												total_count += parseInt(content.countNoread)
+												html += '<span style="float: right;margin-right: 10px;text-align:center;color:#fff;font-size: 10px;display:inline;width:20px;height:20px;background:red;border-radius:11px;padding-left:0px;padding-top:1px;">99+</span>';
+												'</div>'+
+														 '<div>'+
+															'<p style="display: inline;">'+replace_em(content.last_message.content)+'</p>'+
+															'<span style="float: right;display:inline;margin-right: 10px;color: #b8b8b8;font-size: 14px;">'+format()+'</span>'+
+														'</div>'+
+													'</div>'+	
+												'</li>'+
+											'</ul>';			
+										}
+								
+		                        $("#main-content").append(html);
+//		                        document.getElementById()
+		                    }
+		                    
+		                    )
+		                    mui('.mui-content').pullRefresh().endPulldown();	// 结束下拉加载
+		                    if(total_count>0 && total_count < 100){
+		                    	var count_text = "&nbsp;"+total_count+"&nbsp;";
+		                    	document.getElementById("message-total").innerHTML = count_text;
+		                    	var webview = plus.webview.getWebviewById("friend.html");
+								webview.evalJS("change_count('"+ count_text + "')")
+								var webview2 = plus.webview.getWebviewById("cricle.html");
+								webview2.evalJS("change_count('"+ count_text + "')")
+								// 有未读消息时,在发现按钮出添加红点
+								var webview3 = plus.webview.currentWebview().parent().parent();
+								webview3.evalJS("search_button_red(1)")
+		                    }else if(total_count > 99){
+		                    	var count_text = "99+"
+		                    	document.getElementById("message-total").innerHTML = count_text;
+		                    	var webview = plus.webview.getWebviewById("friend.html");
+								webview.evalJS("change_count('"+ count_text + "')")
+								var webview2 = plus.webview.getWebviewById("cricle.html");
+								webview2.evalJS("change_count('"+ count_text + "')")
+								// 有未读消息时,在发现按钮出添加红点
+								var webview3 = plus.webview.currentWebview().parent().parent();
+								webview3.evalJS("search_button_red(1)")
+		                    }
+		                    else{
+		                    	document.getElementById("message-total").innerHTML = ""
+		                    	var webview = plus.webview.getWebviewById("friend.html");
+								webview.evalJS("change_count('"+ "" + "')")
+								var webview2 = plus.webview.getWebviewById("cricle.html");
+								webview2.evalJS("change_count('"+ "" + "')")
+								// 无未读消息时,去除发现按钮处的红点
+								var webview3 = plus.webview.currentWebview().parent().parent();
+								webview3.evalJS("search_button_red(0)")
+		                    }
+						},
+						error:function(xhr,type,errorThrown){
+							//异常处理；
+							console.log(xhr.status);
+						}
+					});
+					
+			    }
+				
+				// 								<!-- if(content.countNoread!=0){
+				// 		                        	html += '<span style="float: right;margin-right: 10px;color: #b8b8b8;font-size: 14px;">'+mydate(content.last_message.time)+'</span></div>';
+				// 		                        }else if(content.countNoread>0&&content.countNoread<=9){	
+				// 		                        	html += '<span style="float: right;margin-right: 10px;color:#fff;font-size: 16px;display:inline-block;width:18px;height:18px;background:red;border-radius:9px;padding-left:4px;">'+content.countNoread+'</span>'+
+				// 		                        			'<span style="float: right;margin-right: 10px;color: #b8b8b8;font-size: 14px;">'+mydate(content.last_message.time)+'</span>'+
+				// 		                        		'</div>';
+				// 		                        }else if(content.countNoread>=10&&content.countNoread<100){
+				// 		                        	html += '<span style="float: right;margin-right: 10px;color:#fff;font-size: 16px;display:inline-block;width:22px;height:22px;background:red;border-radius:11px;padding-left:2px;padding-top:1px;">'+content.countNoread+'</span>'+
+				// 		                        			'<span style="float: right;margin-right: 10px;color: #b8b8b8;font-size: 14px;">'+mydate(content.last_message.time)+'</span>'+
+				// 		                        		'</div>';
+				// 		                        }else{
+				// 		                        	content.countNoread = 99+'+';
+				// 		                        	html += '<span style="float: right;margin-right: 10px;color:#fff;font-size: 14px;display:inline-block;width:22px;height:22px;background:red;border-radius:11px;padding-left:0px;padding-top:1px;">'+content.countNoread+'</span>'+
+				// 		                        			'<span style="float: right;margin-right: 10px;color: #b8b8b8;font-size: 14px;">'+mydate(content.last_message.time)+'</span>'+
+				// 		                        		'</div>';
+				// 		                        } -->
+				
+				
+// 							<div class="banner_comment1" onclick="entry('+content.toid+')">
+// 								<p><img src="'+content.head_url+'" style="width: 40px;height: 40px;float: left;margin-left:10px;"/></p>
+// 								<div id="name">
+// 								   <p><span style="color: #000;">旭伟</span> <img src="'+content.sex+'" style="width: 11px;height: 13px;margin-left: 10px;"/></p>
+// 								   <p>你好</p>
+// 								</div>
+// 								<span style="float: right;margin-right: 10px;color:#fff;font-size: 14px;display:inline-block;width:22px;height:22px;background:red;border-radius:11px;padding-left:0px;padding-top:1px;">99+</span>
+// 								<span style="float: right;margin-right: 10px;color: #b8b8b8;font-size: 14px;">2016-12-11</span>
+// 							</div>
+
+////				// 下拉刷新
+//			mui.init({
+//			  pullRefresh : {
+//			    container:".mui-content",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+//			    down : {
+//			      style:'circle',//必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+//			      color:'#2BD009', //可选，默认“#2BD009” 下拉刷新控件颜色
+//			      height:'50px',//可选,默认50px.下拉刷新控件的高度,
+//			      range:'100px', //可选 默认100px,控件可下拉拖拽的范围
+//			      offset:'0px', //可选 默认0px,下拉刷新控件的起始位置
+//			      auto: false,//可选,默认false.首次加载自动上拉刷新一次
+//			      callback :function(){
+////			      		like_list = []
+////						request()
+//			      		
+//			      } //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+//			    }
+//			  }
+//			});
+
+
+			    //数据处理查看结果
+			    function replace_em(str){
+			        str = str.replace(/\</g,'&lt;');			
+			        str = str.replace(/\>/g,'&gt;');			
+			        str = str.replace(/\n/g,'<br/>');			
+			        str = str.replace(/\[em_([0-9]*)\]/g,'<img src="../qqFace/arclist/$1.gif" border="0" />');			
+			        return str;
+			    }	
+			    
+			    /**
+			     *根据时间戳格式化为日期形式
+			     */
+			    function mydate(nS){
+			
+			        return dateFormat("Y-m-d",new Date(parseInt(nS) * 1000).getTime());
+			    }
+			
+			    function redi(url){
+			        window.location.href=url;
+			    }
+			    
+			    /**
+				* js日期格式化，timestamp支持10位或13位的时间戳，或是时间字符串
+				* @param{string} format传进来的字符串，Y-m-d H:i:s每个字母所代表的意思详见代码
+				* @param{int string}timestamp 要格式化的时间 默认为当前时间可以是日期形式的字符串，可以是10位或13位的时间戳
+				* @return {string} 格式化的时间字符串
+				*/
+				function dateFormat(format, timestamp){
+				    if(timestamp=="" || timestamp==null || format=="") return ""
+				 
+				    //如果传进来的是 日期的字符串形式，变回时间戳
+				    if(typeof(timestamp)=="string"){
+				    //兼容ios
+				    var timestamp = timestamp.replace("T"," ")
+				    if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+				    timestamp = timestamp.replace(/\-/g, "/");
+				    }
+				    if (timestamp.indexOf("-")!==false || timestamp.indexOf("/")!==false ) timestamp = new Date(timestamp).getTime()
+				    }
+				    //如果传进来的是10位的时间戳 变成13位的
+				    if(timestamp.toString().length == 10) timestamp = timestamp * 1000
+				    //如果到这一步，依然不是13位的时间戳，说明数据有问题
+				    timestamp = parseInt(timestamp)
+				    if(timestamp.toString().length != 13) return ""
+				 
+				    var a, jsdate= new Date(timestamp);
+				    var pad = function(n, c){
+				    if((n = n + "").length < c){
+				    return new Array(++c - n.length).join("0") + n;
+				    } else {
+				    return n;
+				    }
+				    };
+				    var txt_weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+				    var txt_ordin = {1:"st", 2:"nd", 3:"rd", 21:"st", 22:"nd", 23:"rd", 31:"st"};
+				    var txt_months = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+				    var f = {
+				    // Day
+				    d: function(){return pad(f.j(), 2)},//2位天,02
+				    D: function(){return f.l().substr(0,3)},//星期单词的前三位
+				    j: function(){return jsdate.getDate()},//天2
+				    l: function(){return txt_weekdays[f.w()]},//星期英文
+				    N: function(){return f.w() + 1},//星期的某一天的数字 星期日为1
+				    S: function(){return txt_ordin[f.j()] ? txt_ordin[f.j()] : 'th'},
+				    w: function(){return jsdate.getDay()},//星期的某一天的数字 星期日为0
+				    z: function(){return (jsdate - new Date(jsdate.getFullYear() + "/1/1")) / 864e5 >> 0},//当前时间是一年中的第几天
+				    // Month
+				    F: function(){return txt_months[f.n()]},//月份英文
+				    m: function(){return pad(f.n(), 2)},//2位月02
+				    M: function(){return f.F().substr(0,3)},//月份英文前三个字母
+				    n: function(){return jsdate.getMonth() + 1},//月2
+				    t: function(){ //当前月总共有多少天
+				    var n;
+				    if( (n = jsdate.getMonth() + 1) == 2 ){
+				    return 28 + f.L();
+				    } else{
+				    if( n & 1 && n < 8 || !(n & 1) && n > 7 ){
+				    return 31;
+				    } else{
+				    return 30;
+				    }
+				    }
+				    },
+				    // Year
+				    L: function(){var y = f.Y();return (!(y & 3) && (y % 1e2 || !(y % 4e2))) ? 1 : 0}, 
+				    //年
+				    Y: function(){return jsdate.getFullYear()},
+				    y: function(){return (jsdate.getFullYear() + "").slice(2)},
+				    // Time
+				    a: function(){return getHours(jsdate) > 11 ? "pm" : "am"},
+				    A: function(){return f.a().toUpperCase()},
+				    B: function(){
+				    // peter paul koch:
+				    var off = (jsdate.getTimezoneOffset() + 60)*60;
+				    var theSeconds = (getHours(jsdate) * 3600) + (jsdate.getMinutes() * 60) + jsdate.getSeconds() + off;
+				    var beat = Math.floor(theSeconds/86.4);
+				    if (beat > 1000) beat -= 1000;
+				    if (beat < 0) beat += 1000;
+				    if ((String(beat)).length == 1) beat = "00"+beat;
+				    if ((String(beat)).length == 2) beat = "0"+beat;
+				    return beat;
+				    },
+				    g: function(){return getHours(jsdate) % 12 || 12},
+				    G: function(){return getHours(jsdate)},
+				    h: function(){return pad(f.g(), 2)},
+				    H: function(){return pad(getHours(jsdate), 2)},
+				    i: function(){return pad(jsdate.getMinutes(), 2)},
+				    s: function(){return pad(jsdate.getSeconds(), 2)},
+				    //u not supported yet
+				    // Timezone
+				    //e not supported yet
+				    //I not supported yet
+				    O: function(){
+				    var t = pad(Math.abs(jsdate.getTimezoneOffset()/60*100), 4);
+				    if (jsdate.getTimezoneOffset() > 0) t = "-" + t; else t = "+" + t;
+				    return t;
+				    },
+				    P: function(){var O = f.O();return (O.substr(0, 3) + ":" + O.substr(3, 2))},
+				    //T not supported yet
+				    //Z not supported yet
+				    // Full Date/Time
+				    c: function(){return f.Y() + "-" + f.m() + "-" + f.d() + "T" + f.h() + ":" + f.i() + ":" + f.s() + f.P()},
+				    //r not supported yet
+				    U: function(){return Math.round(jsdate.getTime()/1000)}
+				    };
+				    //兼容ios
+				    function getHours(dateObj){
+				    //因为上边已经将UTC的时间进行了转换，把T去了，所以这里用同样的方法即可
+				    return dateObj.getHours();
+				 
+				    if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+				    return dateObj.getUTCHours();
+				    }else{
+				    return dateObj.getHours();
+				    }
+				    }
+				 
+				    var ret =""
+				    return format.replace(/[\\]?([a-zA-Z])/g, function(t, s){
+				    if( t!=s ){
+				    // escaped
+				    ret = s;
+				    } else if( f[s] ){
+				    // a date function exists
+				    ret = f[s]();
+				    } else{
+				    // nothing special
+				    ret = s;
+				    }
+				    return ret;
+				    });
+				}
+			}
+			// );
+			function select(obj){
+				plus.webview.hide("message-queues.html");		
+				plus.webview.show(obj.id + ".html")	// 显示当前点击页面
+			}
+			
+//			var produce_info = mui.preload({
+//				url:"../dialog.html",
+//				id:"dialog.html",
+//			})
+			
+			function entry(id){
+				plus.storage.setItem('order_id', id+''); 
+				mui.openWindow({
+					url:"../dialog.html",
+					id:'dialog.html',
+					createNew:true,
+				})
+//				var nwaiting = plus.nativeUI.showWaiting();  
+//				webviewShow = plus.webview.create("../dialog.html","dialog.html"); 
+			}
+			
+			function add(){
+				mui('#sheet1').popover('toggle');
+			}
+			
+		</script>
+		<style>
+			body{
+				background: white;
+			}
+			/*.mui-content{
+				margin-top: 40px;
+			}*/
+			#button-group{
+				width: 100%;
+				height: 40px;
+				margin-top:45px;
+				display: flex;
+				position: fixed;
+				top:0;
+				background: white;
+				z-index: 9;
+			}
+			#button-group div{
+				width: 33.3%;
+				text-align: center;
+				line-height: 40px;
+				border-radius: 4px;
+				
+			}
+			#message-queues{
+				background: white;
+				color: deepskyblue;
+			}
+			#friend{
+				background: deepskyblue;
+				color: white;
+			}
+			#cricle{
+				background: deepskyblue;
+				color: white;
+			}
+			
+		</style>
+	</body>
+
+</html>

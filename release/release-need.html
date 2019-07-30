@@ -1,0 +1,382 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<script src="../js/mui.min.js"></script>
+		<script src="../lib/Vue2.0.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			var type_list = [];
+			var cost_list = [];
+			var limit_list = [];
+		</script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">发布需求</h1>
+		</header>
+		<div class="mui-content">
+		    <form class="mui-input-group" onsubmit="return form_check()">
+			    <div class="mui-input-row">
+			        <label>标题</label>
+			        <input id="need-title" type="text" class="mui-input-clear" placeholder="请输入内容">
+			    </div>
+			    <div class="mui-input-row">
+			        <label>类型</label>
+			        <select name="need-type"  id="need-type">					
+						<option value="1" selected="true">请选择</option>					
+						<option :value="obj.id" v-for="obj in type_list" :id="obj.id">{{ obj.title }}</option>
+					</select>
+			    </div>
+			    <div class="mui-input-row">
+			        <label>预算</label>
+			        
+					<select name="need-cost"  id="need-cost">					
+						<option value="1" selected="true">请选择</option>					
+						<option :value="obj.id" v-for="obj in cost_list" :id="obj.id">{{ obj.title }}</option>				
+					</select>
+			    </div>
+			    <div class="mui-input-row">
+			        <label>期限</label>
+			        <select name="need-limit"  id="need-limit">					
+						<option value="1" selected="true">请选择</option>				
+						<option :value="obj.id" v-for="obj in limit_list" :id="obj.id">{{ obj.title }}</option>								
+					</select>
+			    </div>
+			    <div style="height: 100px;" class="mui-input-row">
+			        <label>需求描述</label>
+			        <textarea id="need-describe" type="text" rows="3" class="mui-input-clear" placeholder="请输入内容"></textarea>
+			    </div>
+			    <div style="height: 100px;" class="mui-input-row">
+			        <label>封面图</label>
+			        <input id="picture-file" hidden="hidden" name="picture" type="file" onchange="picture_selected(this)" />
+			        <div id="picture" onclick="add_picture()"><img id="face-picture" ></div>
+			        
+			    </div>
+			    <div class="button">
+					<button type="submit" id="release">确认发布</button>
+				</div>
+			</form>
+
+		</div>
+		
+		<script>
+			
+			var user_id;
+			var title_value;
+			var type_value;
+			var cost_value;
+			var limit_value;
+			var describe_value;
+			var img_url;
+			var picture_uploaded = "false";
+			
+			// 请求类型,预算,期限的选项数据
+			function request_type(){
+				mui.ajax('https://fcjsz.fosota.com/public/api/index/index',{
+					data:{
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'get',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},	              
+					success:function(data){
+//							mui.alert(JSON.stringify(data))
+						//服务器返回响应，根据响应结果，分析是否登录成功；
+	//						mui.toast(data.msg)
+						if(data.code == 200){
+//							mui.toast("200")
+														
+							// 筛选数据
+							
+							for(var i = 0;i<data.data.ot1.length;i++){
+								type_list.push(data.data.ot1[i])
+							}
+							for(var i = 0;i<data.data.ot2.length;i++){
+								cost_list.push(data.data.ot2[i])
+							}
+							for(var i = 0;i<data.data.ot3.length;i++){
+								limit_list.push(data.data.ot3[i])
+							}
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						mui.toast("请求失败，请检查网络状态")
+						console.log(type);
+					}
+				});
+			}
+			
+			mui.plusReady(function () {
+				user_id = plus.storage.getItem("user_id");
+			    request_type()
+			})
+			
+//
+//				data:{ 
+//					uid:user_id, 
+//					cp_name:title_value,
+//					lxing:type_value,
+//					budget:cost_value,
+//					deadline:limit_value,
+//					cp_content:describe_value,
+//					img:img_url,
+//				},
+
+			
+			// 发布需求请求
+			function release_need(){
+				mui.ajax('http://fcjsz.fosota.com/public/api/index/minefbadd.html',{
+				data:{ 
+					uid:user_id, 
+					cp_name:title_value,
+					lxing:type_value,
+					budget:cost_value,
+					deadline:limit_value,
+					cp_content:describe_value,
+					img:img_url,
+				},
+				dataType:'json',//服务器返回json格式数据
+				type:'post',//HTTP请求类型
+				timeout:10000,//超时时间设置为10秒；
+				headers:{'Content-Type':'application/json'},	              
+				success:function(data){
+//						mui.alert(JSON.stringify(data))
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+//						mui.toast(data.msg)
+					if(data.code == 200){
+						mui.alert("发布成功","发布需求")
+						mui.back()
+					}
+				},
+				error:function(xhr,type,errorThrown){
+					//异常处理；
+					mui.toast("请求失败，请检查网络状态")
+					console.log(type);
+				}
+				});
+			}
+
+
+			// 执行图片上传(base64)
+			function img_upload(img){
+				mui.toast("开始上传图片..")
+				mui.ajax('http://fcjsz.fosota.com/public/api/index/saveimg.html',{
+					data:{
+						 image:img,
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:20000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},
+					success:function(data){
+						if(data.code == 200){
+							mui.toast("图片上传完成")
+							img_url = data.data;
+							picture_uploaded = "true";
+						}
+						
+					},
+					error:function(xhr,type,errorThrown){
+						mui.toast("上传失败，请检查网络状态")
+						console.log(type);
+					}
+				});
+
+			}
+			
+			
+			
+			// 图片选择
+// 			var add_picture = document.getElementById("picture");
+// 			add_picture.addEventListener("tap",function(){
+// 				document.getElementById("picture-file").click();			
+// 			});
+			function add_picture(){
+				document.getElementById("picture-file").click();			
+			}
+			
+			// 选中图片后预览			
+			function picture_selected(file){
+				picture_uploaded = "false";
+				var filename = file.value.toString();
+				var list = filename.split(".")
+				var str = list[list.length-1].toLowerCase();
+				var required_list = ["bmp","jpg","jpeg","png","gif","tif","tiff"]
+				
+				if(required_list.indexOf(str) == -1){
+					mui.toast("不支持该图片格式！") 
+					return false;
+				} 
+				else{
+					var reader = new FileReader();
+					var img = document.getElementById('face-picture'); 
+					//读取File对象的数据
+					reader.onload = function(evt){
+						//data:img base64 编码数据显示
+						img.width  =  "80";
+						img.height =  "80";
+						img.src = evt.target.result;
+						// console.log(img.src);
+						img_upload(img.src);
+					}
+					reader.readAsDataURL(file.files[0]);
+					document.getElementById("picture").style.border = "0";		
+					return true;
+				}			
+			}
+			
+			// 检查表单
+			// 检查标题
+			function check_title(){
+				var title = document.getElementById("need-title");
+				if(title.value == ""){
+					mui.toast("标题不能为空")
+					return false;
+				}
+				else{
+					title_value = title.value;
+					return true;
+				}
+			}
+			
+			// 检查类型
+			function check_type(){
+				var type = document.getElementById("need-type");
+				if(type.selectedIndex == 0){
+					mui.toast("请选择类型");
+					return false; 
+				}
+				else{
+					var index = type.selectedIndex
+					type_value = type.options[index].value
+					return true;
+				}
+			}
+			
+			// 检查预算
+			function check_cost(){
+				var cost = document.getElementById("need-cost");
+				if(cost.selectedIndex == 0){
+					mui.toast("请选择预算");
+					return false;
+				}
+				else{
+					var index = cost.selectedIndex
+					cost_value = cost.options[index].value
+					return true;
+				}
+			}
+			// 检查期限
+			function check_limit(){
+				var limit = document.getElementById("need-limit");
+				if(limit.selectedIndex == 0){
+					mui.toast("请选择期限")
+					return false;
+				}
+				else{
+					var index = limit.selectedIndex
+					limit_value = limit.options[index].value
+					return true;
+				}
+			} 
+			
+			// 检查图片
+			function check_picture(){
+				var picture = document.getElementById("face-picture");
+				if(picture.src){	
+					return true;
+				}
+				else{
+					mui.toast("请选择封面图！")
+					return false;
+				}
+			}
+			 
+			// 检查描述
+			function check_describe(){
+				var describe = document.getElementById("need-describe");
+				if(describe.value == ""){
+					mui.toast("描述不能为空")
+					return false;
+				}
+				else{
+					describe_value = describe.value;
+					return true;
+				}
+			}
+			
+			// 检查所有
+			function form_check(){
+				var title_check = check_title();
+				var describe_check = check_describe();
+				var type_check = check_type();
+				var cost_check = check_cost();
+				var limit_check = check_limit();
+				var picture_check = check_picture();
+				if(title_check && type_check && cost_check && limit_check && picture_check && describe_check){
+					
+					if(picture_uploaded == "true"){
+//						alert(title_value+","+type_value+","+cost_value+","+limit_value+","+describe_value+","+img_url)
+						release_need();
+					}
+					else{
+						mui.toast("请等待图片上传完成")
+					}
+					
+					
+					
+					return false; 
+					
+				}
+				else{
+					return false;
+				}
+			}
+			
+			
+
+		</script>
+		<script type="text/javascript">
+			new Vue({
+				el:".mui-content",
+				data:{
+					type_list:type_list,
+					cost_list:cost_list,
+					limit_list:limit_list,
+				}
+			})
+		</script>
+		<style>
+			.button{
+				text-align: center;
+				padding: 20px;
+			}
+			#release{
+				width: 95%;
+				margin: auto;
+				height: 40px;
+				background: deepskyblue;
+				color: white;
+				border: 0;
+				border-radius: 5px;
+			}
+			#picture{
+				width: 80px;
+				height: 80px;
+				margin: 10px auto;
+				border: 1px dashed grey;
+				background-image: url(../img/add_r.png);
+				background-size: 100%;
+			}
+		</style>
+	</body>
+
+</html>

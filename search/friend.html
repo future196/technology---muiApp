@@ -1,0 +1,472 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" href="../lib/font-awesome-4.7.0/css/font-awesome.min.css" />
+		<script src="../lib/template.js"></script>
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			var friends_list = []
+		</script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">发现</h1>
+			<span class="mui-icon mui-icon-plus" style="float: right;" onclick="add()"></span>
+		</header>
+		<div class="mui-content">
+		    
+			<div id="button-group">	
+				<div id="message-queues" onclick="select(this)">
+					消息
+					<span id="message-total" style="text-align:center;color:#fff;font-size: 12px;display:inline;width:20px;height:20px;background:red;border-radius:11px;"></span>	
+				</div>
+				<div id="friend" onclick="select(this)">附近宅友</div>
+				<div id="cricle" onclick="select(this)">宅友圈</div>
+			</div>
+			
+			<p id="login_null" style="text-align: center;margin-top: 140px;">您还未登录，请先登录才可查看哦</p>
+			<div class="main" id="app-members">
+				
+				<!--template循环列表插入位置-->
+				<div id="templatelist">
+					<div style="margin-top:50px">
+						<p style="text-align: center;">加载中...</p>
+						<p style="text-align: center;">如长时间未加载可尝试下拉刷新</p>
+					</div>
+				</div>
+				
+				<!--template.js模板引擎作用区-->
+				<script type="text/html" id="template1">
+					<% for(var i=0;i<list.length;i++){ %>
+					<div class="banner_comment" id="<%= list[i].id %>" onclick="entry(this.id)">
+						<div >
+							<p>
+							<%
+							 if(list[i].avatar == null){
+								 list[i].avatar = "../img/default_icon.jpg"
+							 }
+							 %>
+								<img src="<%= list[i].avatar %>" style="width: 70px;height: 70px;float: left;margin-left:10px;"/>
+							</p>
+							<div id="name">
+								<p>
+									<% 
+									 if(list[i].member_name == null){
+										 list[i].member_name = "无名游客"
+									 }
+									 %>
+									<span style="color: #000;padding-left: 2px;font-size: 16px;"><%= list[i].member_name %></span>
+								</p>
+								<% if(list[i].sex == 1){ %>
+								<p id="sex">
+									<span class="fa fa-mars" style="color: #fff;padding-left: 5px;"><%= list[i].birth %></span>
+								</p>
+								<%}else{ %>
+								<p id="sex1">
+									<span class="fa fa-venus"  style="color: #fff;padding-left: 5px;"><%= list[i].birth %></span>
+								</p>
+								<%}%>
+								
+								<p style="padding-top:2px;"><%= list[i].occupation %></p>
+							</div>
+							<span style="float: right;margin-right: 10px;color: #b8b8b8;font-size: 14px;"><%= list[i].km %></span>
+						</div>
+					</div>
+					<%}%>
+				</script>
+				
+				
+				
+			</div>
+			
+			<div id="sheet1" class="mui-popover mui-popover-bottom mui-popover-action ">
+			    <!-- 可选择菜单 -->
+			    <ul class="mui-table-view">
+			      	<!-- <li class="mui-table-view-cell">
+			        	<a href="#">添加宅友</a>
+			      	</li> -->
+			      		<li class="mui-table-view-cell">
+			        	<a href="#" onclick="release_cricle()">发布宅友圈</a>
+			      	</li>
+			    </ul>
+			    	<!-- 取消菜单 -->
+			    <ul class="mui-table-view">
+			      	<li class="mui-table-view-cell">
+			        	<a href="#sheet1"><b>取消</b></a>
+			      	</li>
+			    </ul>
+			</div>
+		</div>
+		<!-- <div id="container" style="width:600px;height:600px"></div> -->
+		<script src="../lib/Vue2.0.js"></script>
+		<script>	
+			// var 
+			var count; // data.data.count;
+			
+			function check_login(){
+				var login_status = plus.storage.getItem("login_status");
+				if(login_status == "false"){
+					document.getElementById("login_null").removeAttribute("hidden")
+					document.getElementById("app-members").setAttribute("hidden","hidden")
+				}else if(login_status == "true"){
+					document.getElementById("app-members").removeAttribute("hidden")
+					document.getElementById("login_null").setAttribute("hidden","hidden")
+					action()
+				}
+			}
+			
+			mui.plusReady(function(){
+				check_login()
+			});
+				
+			function action(){
+				var member = plus.storage.getItem('member');
+				var members = JSON.parse(member);
+				var fromid = members.id;
+				var currentLon,currentLat;
+				long_lati_request();
+				var API_URL = "https://fcjsz.fosota.com/public/api/chat/";
+		    	ws =  new WebSocket("ws://fcjsz.fosota.com:7272");
+		    	ws.onmessage=function(e){
+			        var message = eval("("+ e.data+")");
+			        switch (message.type){
+			            case  "init":
+			                var bild = '{"type":"bind","fromid":"'+fromid+'"}'; 
+			                ws.send(bild);
+			                list();
+			                return;
+			        }
+			    }
+
+				// 获取经纬度（javascript百度地图api）
+				function long_lati_request(){
+					plus.geolocation.getCurrentPosition(translatePoint,function(e){
+	                    mui.toast("异常:" + e.message);
+	       			});
+				}
+				
+				function translatePoint(position){
+					currentLon = position.coords.longitude;
+				 	currentLat = position.coords.latitude;
+				}
+				function list(){
+					mui.ajax('https://fcjsz.fosota.com/public/api/index/getMembers',{
+						data:{fromid:fromid,x:currentLat,y:currentLon},
+						dataType:'json',//服务器返回json格式数据
+						type:'post',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						headers:{'Content-Type':'application/json'},	              
+						success:function(data){
+//							alert(JSON.stringify(data))
+							if(data.code==200){
+//								 alert(JSON.stringify(data))
+								 for(var i = 0;i<data.data.members.length;i++){
+								 	friends_list.push(data.data.members[i])
+								 	if((data.data.members[i].avatar).indexOf("/public") != -1){
+										data.data.members[i].avatar = "https://fcjsz.fosota.com"+data.data.members[i].avatar;
+									}
+								 }
+//								var members = data.data.members;
+								friends_list = data.data.members;
+								var sex = data.data.sex;
+								render()
+// 								var app4 = new Vue({
+// 								  el: '#app-members',
+// 								  data: {
+// 								  	sex:sex,
+// 								    members: members 
+// 								  }
+// 								})
+							}
+						},
+						error:function(xhr,type,errorThrown){
+							//异常处理；  
+							console.log(type);  
+						}
+					});
+				}
+				}
+			
+			
+			// 下拉刷新
+			mui.init({
+			  pullRefresh : {
+			    container:".main",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+			    down : {
+			      style:'circle',//必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+			      color:'#2BD009', //可选，默认“#2BD009” 下拉刷新控件颜色
+			      height:'50px',//可选,默认50px.下拉刷新控件的高度,
+			      range:'100px', //可选 默认100px,控件可下拉拖拽的范围
+			      offset:'0px', //可选 默认0px,下拉刷新控件的起始位置
+			      auto: false,//可选,默认false.首次加载自动上拉刷新一次
+			      callback :function(){
+			      	setTimeout(
+		      			function(){
+							friend_list = []
+							action()
+		      			},300);
+			      		
+			      		
+			      } //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+			    }
+			  }
+			});
+			
+			
+//			// 上拉加载更多
+//			mui.init({
+//			  pullRefresh : {
+//			    container:".main",//待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等
+//			    up : {
+//			      height:50,//可选.默认50.触发上拉加载拖动距离
+//			      auto:false,//可选,默认false.自动上拉加载一次
+//			      contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+//			      contentnomore:'没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+//			      callback :function(){
+//						var current_page = cricle_list.length/5
+//						if(current_page >=1){
+//							pages = current_page+1;
+//						}
+////						else{
+////							isend = true;
+////							mui('.main').pullRefresh().endPullupToRefresh(false); 
+////						}
+//						if(cricle_list.length >= count){
+//							mui.toast("没有更多数据了")
+//							mui('.main').pullRefresh().endPullupToRefresh(false); // 结束上拉加载
+//						}else{
+////							mui.toast(count)
+//							search_request();
+//						}
+//						
+//			      	}
+//			  }
+//			}
+//			  });
+			
+			
+			// 刷新消息处的消息数
+			function change_count(number){
+				document.getElementById("message-total").innerHTML = number;
+			}
+
+			
+//			// 聊天页面预加载
+//			var produce_info = mui.preload({
+//				url:"../dialog.html",
+//				id:"dialog.html",
+//			})		
+			function entry(id){
+				var login_status = plus.storage.getItem("login_status");
+//				mui.toast(login_status)
+				if(login_status == "true"){
+					var order_id = id;
+					plus.storage.setItem('order_id', order_id); 
+					mui.openWindow({
+						url:"../dialog.html",
+						id:'dialog.html',
+						createNew:true,
+					})		
+	    		}else{
+	    			mui.confirm("请先登录哦","附近宅友",["取消","立即登录"],function(e){
+	    				if(e.index == 1){		
+							mui.openWindow({
+							url:"../account/login.html",
+							id:"login.html",
+				})
+						}
+						else{
+							mui.toast("您已放弃联系")
+						}
+	    			})
+	    		}	
+			}
+			
+			// 发现页的子页面选择
+			function select(obj){
+				plus.webview.hide("friend.html");
+				plus.webview.show(obj.id + ".html")	// 显示当前点击页面
+			}
+			
+			// 操作表弹出
+			function add(){
+				mui('#sheet1').popover('toggle');
+			}
+			
+			// 发布宅友圈
+			function release_cricle(){
+				mui('#sheet1').popover('toggle');
+				mui.openWindow({
+					url:"../release/release-cricle.html",
+					id:"release-cricle.html",
+					createNew:true,
+					extras:{
+					}
+				})
+			}
+			
+			// 模板渲染
+			function render(){
+				var template1 = document.getElementById('template1').innerHTML;
+				document.getElementById('templatelist').innerHTML = template(template1, {list:friends_list});
+				mui('.main').pullRefresh().endPullupToRefresh(false); // 结束上拉加载
+				mui('.main').pullRefresh().endPulldown();	// 结束下拉加载
+			}
+			
+		</script>
+		
+		<style>
+			body{
+				background: white;
+			}
+			.main{
+				margin-top: 50px;
+			}
+			#button-group{
+				width: 100%;
+				height: 40px;
+				margin-top:45px;
+				display: flex;
+				position: fixed;
+				top:0;
+				background: white;
+				z-index: 9;
+			}
+			#button-group div{
+				width: 33.3%;
+				text-align: center;
+				line-height: 40px;
+				border-radius: 4px;
+				
+			}
+			#cricle{
+				background: deepskyblue;
+				color: white;
+			}
+			#message-queues{
+				background: deepskyblue;
+				color: white;
+			}
+			#friend{
+				background: white;
+				color: deepskyblue;
+			}
+			
+			
+			body{
+				background: #fff;
+			}
+			.mui-content{
+				background: #fff;
+				margin: 0 0 50px 0;
+			}
+			.banner{
+				position: fixed;
+				width: 100%;
+				top: 0;
+			}
+			#btn1{
+				color: #fff;
+				border: none;
+				height: 40px;
+				line-height: 28px;
+				width: 50%;
+				float: left;
+				background: #66cbff;
+			}
+			#btn2{
+				color: #66cbff;
+				background: #fff;
+				border: none;
+				height: 40px;
+				line-height: 28px;
+				width: 50%;
+			}
+			#name{
+				/*width: 65%;*/
+				padding-left: 10px;
+				float: left;
+				margin-bottom: 20px;
+			}
+			#name p{
+				margin-bottom: 0;
+			}
+			#name p:nth-child(3){
+				overflow:hidden;
+				-webkit-line-clamp:1;
+				-webkit-box-orient: vertical;
+				word-break: break-all;
+				display: -webkit-box;
+				white-space: pre-wrap;
+			}
+			
+			.banner_comment{
+				margin-top:10px;
+				height: 82px;
+				border-bottom: 1px #f0f0f0 solid;
+			}
+			#sex{
+				width: 40px;
+				height: 20px;
+				background: #66cbff;
+				border-radius: 6px;
+				background-size: 11px 13px;
+				background-repeat: no-repeat;
+				margin: 7px 0 0 2px;
+			}
+			#sex1{
+				width: 40px;
+				height: 20px;
+				background: #ff81ac;
+				border-radius: 6px;
+				background-size: 11px 13px;
+				background-repeat: no-repeat;
+				margin: 7px 0 0 2px;
+			}
+			
+			/*@media only screen and (min-width: 320px) {
+				#name{
+					width: 59%;
+				}
+			}
+			@media only screen and (min-width: 360px) {
+				#name{
+					width: 64%;
+				}
+			}
+			@media only screen and (min-width: 375px) {
+				#name{
+					width: 65%;
+				}
+			}
+			@media only screen and (min-width: 411px) {
+				#name{
+					width: 68%;
+				}
+			}
+			@media only screen and (min-width: 414px) {
+				#name{
+					width: 68%;
+				}
+			}
+			@media only screen and (min-width: 768px) {
+				#name{
+					width: 81%;
+				}
+			}
+			@media only screen and (min-width: 1024px) {
+				#name{
+					width: 85%;
+				}
+			}*/
+		</style>
+	</body>
+</html>

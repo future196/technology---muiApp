@@ -1,0 +1,225 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+				<script src="js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			var developer_info = {};
+		</script>
+	</head>
+		
+	<body>
+		
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">攻城狮详情</h1>
+		    <span onclick="chat()" style="font-size: 1em;border-radius:100px;margin:5px;color: white;float: right;height:80%;background: dodgerblue;" class="mui-icon mui-icon-chatboxes">咨询</span>
+		</header>
+		
+		<div class="mui-content">
+		    <li class="mui-table-view-cell">攻城狮名称&nbsp;&nbsp;&nbsp;&nbsp;<font id="name">加载中...</font></li>
+		    <li class="mui-table-view-cell">出&nbsp;&nbsp;&nbsp;&nbsp;场&nbsp;&nbsp;&nbsp;费&nbsp;&nbsp;&nbsp;&nbsp;<font id="money">加载中...</font></li>
+		    <li class="mui-table-view-cell">地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;区&nbsp;&nbsp;&nbsp;&nbsp;<font id="address">加载中...</font></li>
+		    <li class="mui-table-view-cell">状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态&nbsp;&nbsp;&nbsp;&nbsp;<font id="status">加载中...</font></li>
+		    <li class="mui-table-view-cell">擅 长 领 域&nbsp;&nbsp;&nbsp;&nbsp;<font id="skill">加载中...</font></li>
+		    <li class="mui-table-view-cell">其 他 信 息&nbsp;&nbsp;&nbsp;&nbsp;<p id="other">其他信息</p></li>
+		    
+		</div>
+		<div id="button-group">
+			<div id="telephone-button"><span class="mui-icon mui-icon-phone"></span><span id="telephone">****</span></div>
+			<div id="request">预约客户</div>
+		</div>
+		
+		<script>
+			
+			var user_id;
+			var developer_id;
+			var member_id;
+			var login_status = "false";
+			
+			function request(){
+				mui.ajax('http://fcjsz.fosota.com/public/api/index/khde.html',{
+				data:{ 
+					uid:user_id, 
+					pid:developer_id,
+				},
+				dataType:'json',//服务器返回json格式数据
+				type:'post',//HTTP请求类型 
+				timeout:10000,//超时时间设置为10秒；
+				headers:{'Content-Type':'application/json'},	              
+				success:function(data){
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					if(data.code == 200){
+//						mui.toast("developerinfo_request post 200")
+						developer_info = data.data
+//						 alert(JSON.stringify(data.data))
+						member_id = data.data.cpmember_id
+						render()
+						}
+				},
+				error:function(xhr,type,errorThrown){
+					//异常处理；
+					mui.toast("请求失败,请检查网络状态")
+					console.log(type);
+					plus.nativeUI.closeWaiting();
+				}
+			});
+			}
+			
+			// 内容渲染
+			function render(){
+				var name = document.getElementById("name");
+				var cost = document.getElementById("money");
+				var address = document.getElementById("address");				
+				var status = document.getElementById("status");
+				var skill = document.getElementById("skill");
+				var other = document.getElementById("other");
+				var telephone_button = document.getElementById("telephone");
+//				var like = document.getElementById("like");
+//				var request = document.getElementById("request");
+				name.innerHTML = developer_info.name;
+				cost.innerHTML = developer_info.budget;
+				address.innerHTML = developer_info.region;
+				if(developer_info.static == 0){
+					developer_info.static = "空闲"
+				}
+				else{
+					developer_info.static = "忙碌"
+				}
+				status.innerHTML = developer_info.static;
+				skill.innerHTML = developer_info.lxing;
+				other.innerHTML = developer_info.content;
+				telephone_button.innerHTML = developer_info.member_phone;
+				
+				var currentView = plus.webview.currentWebview();
+				currentView.show('slide-in-right', 300);
+				plus.nativeUI.closeWaiting();
+			}
+			
+			mui.plusReady(function(){
+				user_id = plus.storage.getItem("user_id");
+				developer_id = plus.storage.getItem("developer_id")
+				login_status = plus.storage.getItem("login_status")
+				request()
+			})
+			
+			// 咨询
+			function chat(){
+				if(login_status == "false"){
+					mui.alert("请先登录哦","咨询")
+				}else{
+					plus.storage.setItem('order_id', member_id+""); 
+				mui.openWindow({
+					url:"dialog.html",
+					id:'dialog.html',
+					createNew:true,
+				})		
+				}
+				
+			}
+			
+			// 电话拨打
+			var tel_button = document.getElementById("telephone-button");
+			tel_button.addEventListener("tap",function(){
+				var telephone = document.getElementById("telephone").innerHTML;
+				var str = telephone.toString();
+				if(str.indexOf("*") != -1){
+					if(request_button.innerHTML == "已预约"){
+						mui.alert("请等待预约通过哦","电话联系")
+					}
+					else if(request_button.innerHTML = "预约客户"){
+						mui.alert("请先预约哦","电话联系")
+					}
+				}
+				else{
+					mui.confirm("开始拨打电话吗？","系统提示",["否","是"],function(e){
+						if(e.index == 1){		
+							//TODO：执行电话拨打
+							plus.device.dial(str,false);
+						}
+						else{
+							// mui.toast("您已取消")
+						}
+					})
+				}
+			})
+			
+			// 预约客户请求方法
+			function developer_request(){
+				mui.ajax(' http://fcjsz.fosota.com/public/api/index/yuyue_apply.html',{
+				data:{ 
+					uid:user_id, 
+					pid:developer_id,
+				},
+				dataType:'json',//服务器返回json格式数据
+				type:'post',//HTTP请求类型
+				timeout:10000,//超时时间设置为10秒；
+				headers:{'Content-Type':'application/json'},	              
+				success:function(data){
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					if(data.code == 200){
+//						mui.toast("developer_info_request post 200")
+						developer_info = data.data
+						mui.alert(data.msg,"攻城狮申请")
+						}
+				},
+				error:function(xhr,type,errorThrown){
+					//异常处理；
+					mui.toast("预约失败,请检查网络状态")
+					console.log(type);
+				}
+			});
+			}
+			
+			// 预约客户
+			var request_button = document.getElementById("request");
+			request_button.addEventListener("tap",function(){
+				if(login_status == "false"){
+					mui.alert("请先登录哦","预约客户")
+				}
+				else{
+					mui.toast("预约中..")
+					developer_request();
+				}
+				
+			});
+			
+			
+		</script>
+		<style>
+			li{
+				list-style: none;
+				color:#00BFFF;
+			}
+			font{
+				color: grey;
+			}
+			#button-group{
+				width: 100%;
+				height: 40px;
+				display: flex;
+				position:fixed;
+				bottom:0;
+			}
+			#button-group div{
+				width: 50%;
+				text-align: center;
+				line-height: 40px;
+				border-radius: 3px;
+			}
+			#telephone-button{
+				background: lightgray;
+			}
+			#request{
+				background: deepskyblue;
+				color: white;
+			}
+		</style>
+	</body>
+
+</html>

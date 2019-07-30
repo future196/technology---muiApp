@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init()
+		</script>
+		<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=
+6AalujvIC4dVAH6KQUbQATTIKyoXcxpP"></script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">系统推单</h1>
+		</header>
+		<div class="mui-content">
+		    <div id="template-area">
+				<div style="margin-top:50px">
+					<p style="text-align: center;">暂无更多内容</p>
+					<!--<p style="text-align: center;">加载中...</p>
+					<p style="text-align: center;">如长时间未加载可尝试下拉刷新</p>-->
+				</div>
+			</div>
+		</div>
+		<!--<div class="mui-content">
+			<button onclick="xuwei()">测试</button>
+			<button onclick="xuwei2()">测试2</button>
+			<button onclick="xuwei3()">测试3</button>
+			<div id="allmap" style="height:700px;width:800px;"></div>
+		</div>-->
+
+		<!--<script type="text/javascript">
+
+		    // 通过自定义经纬度获取地址详细信息
+		    function xuwei(){
+		    	var geoc = new BMap.Geocoder();    
+		    	var pot = new BMap.Point(116.331398,23.897445);
+		        geoc.getLocation(pot, function(rs){
+		            //addressComponents对象可以获取到详细的地址信息
+		            var addComp = rs.addressComponents;
+		            var site =addComp.state + ", "+ addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber;
+		            mui.toast(site);
+		        });   
+		    }
+		    
+		    
+		    
+		    // 获取当前经纬度，并且获取地址详细信息
+		    function xuwei2() {
+		    plus.geolocation.getCurrentPosition(MapPoint, function(e) {
+		         mui.toast("error:" + e.message);
+		         })
+		    }
+			function MapPoint(position) {
+			    var Lon = position.coords.longitude;   //获取经度
+			    var Lat = position.coords.latitude;  //获取纬度
+			    var address = "当前地址：" + position.address.province + "," + position.address.city + "," + position.address.district + "," + position.address.street + "," + position.address.streetNum;
+			    alert(Lon + "," + Lat);
+			    alert(address);  
+			}
+			
+			
+			
+			// 获取经纬度（javascript百度地图api）
+			function xuwei3(){
+				plus.geolocation.getCurrentPosition(translatePoint,function(e){
+                    mui.toast("异常:" + e.message);
+       			});
+			}
+			function translatePoint(position){
+				currentLon = position.coords.longitude;
+			 	currentLat= position.coords.latitude;
+				mui.toast("当前位置："+currentLon +","+currentLat);
+			}
+
+
+
+		</script>-->
+	</body>
+
+</html>

@@ -1,0 +1,537 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/preview.css" rel="stylesheet" />		
+		<script src="js/mui.min.js"></script>
+		<script src="js/mui.zoom.js"></script>
+		<script src="js/mui.previewimage.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			
+		</script>
+	</head>
+
+	<body>
+		
+		<header class="mui-bar mui-bar-nav">
+		    <h1 class="mui-title">个人中心</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div id="login_content">
+				<div class="user-head">
+					<img style="border-radius: 50px;" id="icon" data-preview-src src="img/default_icon.jpg"  />
+				
+				</div>
+				<div class="user-info">
+					<p id="telephone">****</p>
+					<p>宅币余额（个）</p>
+					<div>
+						<b id="balance">0</b>
+						<font id="recharge-botton">充值</font>
+						<!--<font id="hot-button">热销程序</font>-->
+					</div>
+				</div>
+				<div class="mui-content">
+		    
+				<div class="user-options">
+					<ul class="mui-table-view" onclick="personal_info()">
+					    <li class="mui-table-view-cell">
+					        <a class="mui-navigate-right" style="display: flex;">
+					        	<div style="width: 20px;height: 20px;background-image:url(images/mine.png);background-size: 100% 100%;"></div>
+					        	&nbsp;个人资料
+					        </a>
+					    </li>
+					</ul>
+					<ul class="mui-table-view" onclick="need_requestion()">
+					    <li class="mui-table-view-cell">
+					        <a class="mui-navigate-right" style="display: flex;">
+					        	<div style="width: 20px;height: 20px;background-image:url(images/release.png);background-size: 100% 100%;"></div>
+					        	&nbsp;需求申请</a>
+					    </li>
+					</ul>
+					<ul class="mui-table-view" onclick="developer_requestion()">
+					    <li class="mui-table-view-cell">
+					        <a class="mui-navigate-right" style="display: flex;">
+					        	<div style="width: 20px;height: 20px;background-image:url(images/release.png);background-size: 100% 100%;"></div>
+					        	&nbsp;预约攻城狮</a>
+					    </li>
+					</ul>
+					<ul class="mui-table-view" onclick="need_release()">
+					    <li class="mui-table-view-cell">
+					        <a class="mui-navigate-right" style="display: flex;">
+					        	<div style="width: 20px;height: 20px;background-image:url(images/release.png);background-size: 100% 100%;"></div>
+					        	&nbsp;需求发布</a>
+					    </li>
+					</ul>
+					<ul class="mui-table-view" onclick="developer_release()">
+					    <li class="mui-table-view-cell">
+					        <a class="mui-navigate-right" style="display: flex;">
+							<div style="width: 20px;height: 20px;background-image:url(images/release.png);background-size: 100% 100%;"></div>
+							&nbsp;攻城狮发布
+							</a>
+							
+					    </li>
+					</ul>
+					<ul class="mui-table-view" onclick="need_order()">
+					    <li class="mui-table-view-cell">
+					        <a class="mui-navigate-right" style="display: flex;">
+					        	<div style="width: 20px;height: 20px;background-image:url(images/order.png);background-size: 100% 100%;"></div>
+					        	&nbsp;需求订单</a>
+								<div id="need_order" class=""></div>
+					    </li>
+					</ul>
+					<ul class="mui-table-view" onclick="developer_order()">
+					    <li class="mui-table-view-cell">
+					        <a class="mui-navigate-right" style="display: flex;">
+					        	<div style="width: 20px;height: 20px;background-image:url(images/order.png);background-size: 100% 100%;"></div>
+					        	&nbsp;攻城狮订单
+								</a>
+								<div id="developer_order" class=""></div>
+					    </li>
+					</ul>
+					<ul class="mui-table-view" onclick="credit()">
+					    <li class="mui-table-view-cell">
+					        <a class="mui-navigate-right" style="display: flex;">
+					        	<div style="width: 20px;height: 20px;background-image:url(images/credit.png);background-size: 100% 100%;"></div>
+					        	&nbsp;我的信用</a>
+					    </li>
+					</ul>
+					<ul class="mui-table-view" onclick="system_order()">
+					    <li class="mui-table-view-cell">
+					        <a class="mui-navigate-right" style="display: flex;">
+					        <div style="width: 20px;height: 20px;background-image:url(images/setting.png);background-size: 100% 100%;"></div>
+					        	&nbsp;系统推单</a>
+					    </li>
+					</ul>
+					<ul class="mui-table-view" onclick="help_feedback()">
+					    <li class="mui-table-view-cell">
+					        <a class="mui-navigate-right" style="display: flex;">
+					        	<div style="width: 20px;height: 20px;background-image:url(images/order.png);background-size: 100% 100%;"></div>
+					        	&nbsp;帮助与反馈</a>
+					    </li>
+					</ul>
+					<ul class="mui-table-view" onclick="like()">
+					    <li class="mui-table-view-cell">
+					        <a class="mui-navigate-right" style="display: flex;">
+					        	<div style="width: 20px;height: 20px;background-image:url(images/like.png);background-size: 100% 100%;"></div>
+					        	&nbsp;我的收藏</a>
+					    </li>
+					</ul>
+					<ul class="mui-table-view" onclick="customer_service()">
+					    <li class="mui-table-view-cell">
+					        <a class="mui-navigate-right" style="display: flex;">
+					        	<div style="width: 20px;height: 20px;background-image:url(images/order.png);background-size: 100% 100%;"></div>
+					        	&nbsp;联系客服</a>
+					    </li>
+					</ul>
+					<ul class="mui-table-view" onclick="about_us()">
+					    <li class="mui-table-view-cell">
+					        <a class="mui-navigate-right" style="display: flex;">
+					        	<div style="width: 20px;height: 20px;background-image:url(images/mine.png);background-size: 100% 100%;"></div>
+					        	&nbsp;关于我们
+					        </a>
+					        <div id="about_us" class=""></div>
+					    </li>
+					</ul>
+					
+				</div>
+				<div class="button">
+					<button id="logout">退出登录</button>
+				</div>
+			</div>
+	
+		</div>
+		<div id="logout_content">
+			<p id="login_null" style="text-align: center;margin-top: 140px;">您还未登录，请先登录哦</p>
+			<button id="login-button" type="button" class="mui-btn mui-btn-blue" style="display:block;margin:0 auto">立即登录</button>
+		</div>
+		<script>
+			
+			
+			// 判断登录状态进行页面加载
+			function check_status(){
+				var login_status = plus.storage.getItem("login_status");
+				if(login_status == "true"){
+					document.getElementById("logout_content").setAttribute("hidden","hidden");
+					document.getElementById("login_content").removeAttribute("hidden");
+					render()
+				}
+				else{
+					document.getElementById("login_content").setAttribute("hidden","hidden");
+					document.getElementById("logout_content").removeAttribute("hidden");
+				}
+			}
+			
+			// 数据渲染
+			function render(){
+//				mui.toast("render")
+				var telephone = document.getElementById("telephone");
+				var icon = document.getElementById("icon");
+				var balance = document.getElementById("balance");
+				if(plus.storage.getItem("user_icon") != "null"){
+					icon.src = plus.storage.getItem("user_icon");
+					
+				}else{
+					icon.src = "img/default_icon.jpg"
+				}
+				telephone.innerHTML = plus.storage.getItem("user_name");
+				balance.innerHTML = plus.storage.getItem("user_money");
+			}
+			
+			mui.plusReady(function(){
+				refresh()
+			})	
+			
+			// 刷新
+			function refresh(){
+//				alert("shuaxonm")
+				check_status();
+				check_grade()
+				check_new()
+			}
+					
+			window.addEventListener('refresh', function(e){//执行刷新
+				refresh()
+			});
+			
+			
+			// 检查是否有消息未处理/查看
+			function check_new(){
+				mui.ajax('http://fcjsz.fosota.com/public/api/index/getnewnum.html',{
+					data:{
+						
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'get',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					success:function(data){
+//						alert(JSON.stringify(data))
+						if(data.counta > 0){
+							document.getElementById("need_order").className = "red_spot"
+						}else{
+							document.getElementById("need_order").className = ""
+						}
+						if(data.countb > 0){
+							document.getElementById("developer_order").className = "red_spot"
+						}else{
+							document.getElementById("developer_order").className = ""
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						
+					}
+				});
+			}
+			
+			// 获取当前版本
+			
+			// 检查是否有新版本更新
+			function check_grade(){
+				mui.getJSON("manifest.json", null, function(manifest){
+					versionName = manifest.version.name;
+					versionCode = Number(manifest.version.code);
+					// mui.toast("版本名称："+versionName+"，版本code："+versionCode);
+				
+					mui.ajax('http://fcjsz.fosota.com/public/api/version/index.html',{
+						data:{
+							
+						},
+						dataType:'json',//服务器返回json格式数据
+						type:'get',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						success:function(data){
+							// alert(JSON.stringify(data))
+							
+							if(versionCode < data.apk.varsion_num){
+								document.getElementById("about_us").className = "red_spot"
+							}else{
+								document.getElementById("about_us").className = ""
+							}
+						},
+						error:function(xhr,type,errorThrown){
+							
+						}
+					});
+				});
+				
+			}
+			
+			
+			// 更新头像
+			var icon =  document.getElementById("icon");
+			icon.addEventListener("tap",function(){
+				mui.confirm("请选择您的操作","个人头像",["修改头像","看大图"],function(event){
+					if(event.index == 0){
+						mui.openWindow({
+							url:"user/change_icon.html",
+							id:"change_icon.html",
+							createNew:true,
+							extras:{
+							}
+						})
+					}
+				})
+			})
+
+
+
+
+			// 个人资料页
+			function personal_info(){
+				mui.openWindow({
+					url:"user/personal-info.html",
+			    	id:"personal-info.html",
+					createNew:true,
+			    	extras:{
+			    	}
+				})
+			}
+			function need_requestion(){
+				mui.openWindow({
+					url:"user/need-requestion.html",
+			    	id:"need-requestion.html",
+					createNew:true,
+			    	extras:{
+			    	}
+				})
+			}
+			
+			function developer_requestion(){
+				mui.openWindow({
+					url:"user/developer-requestion.html",
+			    	id:"developer-requestion.html",
+					createNew:true,
+			    	extras:{
+			    	}
+				})
+			}
+			function need_release(){
+				mui.openWindow({
+					url:"user/need-release.html",
+			    	id:"need-release.html",
+					createNew:true,
+			    	extras:{
+			    	}
+				})
+			}
+			
+			function developer_release(){
+				mui.openWindow({
+					url:"user/developer-release.html",
+			    	id:"developer-release.html",
+					createNew:true,
+			    	extras:{
+			    	}
+				})
+			}
+			function need_order(){
+				mui.openWindow({
+					url:"user/need-order.html",
+			    	id:"need-order.html",
+					createNew:true,
+			    	extras:{
+			    	}
+				})
+			}
+			function developer_order(){
+				mui.openWindow({
+					url:"user/developer-order.html",
+			    	id:"developer-order.html",
+					createNew:true,
+			    	extras:{
+			    	}
+				})
+			}
+			function credit(){
+				mui.openWindow({
+					url:"user/credit.html",
+			    	id:"credit.html",
+					createNew:true,
+			    	extras:{
+			    	}
+				})
+			}
+			function system_order(){
+				mui.openWindow({
+					url:"user/system-order.html",
+			    	id:"system-order.html",
+					createNew:true,
+			    	extras:{
+			    	}
+				})
+			}
+			
+			function help_feedback(){
+				mui.openWindow({
+					url:"user/help-feedback.html",
+			    	id:"help-feedback.html",
+					createNew:true,
+			    	extras:{
+			    	}
+				})
+			}
+			
+			function like(){
+				mui.openWindow({
+					url:"user/like.html",
+			    	id:"like.html",
+					createNew:true,
+			    	extras:{
+			    	}
+				})
+			}
+			
+			function customer_service(){
+				mui.openWindow({
+					url:"user/customer-service.html",
+			    	id:"customer-service.html",
+					createNew:true,
+			    	extras:{
+			    	}
+				})
+			}
+			
+			function about_us(){
+				mui.openWindow({
+					url:"user/about_us.html",
+			    	id:"about_us.html",
+					createNew:true,
+			    	extras:{
+			    	}
+				})
+			}
+			
+			
+			var logout_button = document.getElementById("logout");
+			logout_button.addEventListener("tap",function(){
+				plus.storage.setItem('login_status', "false");  
+				
+				var webview = plus.webview.getWebviewById("home.html");
+				webview.evalJS("check_status()")
+				var webview2 = plus.webview.getWebviewById("user.html");
+				webview2.evalJS("check_status()")
+				var webview3 = plus.webview.getWebviewById("message-queues.html");
+				webview3.evalJS("action()")
+				var webview4 = plus.webview.getWebviewById("friend.html");
+				webview4.evalJS("check_login()")
+				
+				mui.openWindow({
+					url:"account/login.html",
+					id:"login.html",
+					createNew:true,
+				})
+				mui.alert("注销成功","账号注销")
+			});
+			
+			// 点击登录按钮
+			var login_button = document.getElementById("login-button");
+			login_button.addEventListener("tap",function(){
+				
+				mui.openWindow({
+					url:"account/login.html",
+					id:"login.html",
+					createNew:true,
+				})
+			});
+			
+			var recharge = document.getElementById("recharge-botton");
+			recharge.addEventListener("tap",function(){
+				mui.openWindow({
+					url:"user/buy_coin.html",
+					id:"buy_coin.html",
+					createNew:true,
+				})
+			})
+			mui.previewImage();
+		</script>
+		<style>
+			body{
+				/* background: white; */
+			}
+			.user-head{
+				width: 100%;
+				height: 130px;
+				/*background: deepskyblue;*/
+				background-image: url(img/user-background.png);
+				background-size: 100% 100%;
+				text-align: center;
+			}
+			.user-head img{
+				width: 70px;
+				height: 70px;
+				margin-top:60px;
+			}
+			.user-info{
+				background: white;
+				padding: 10px;
+			}
+			.user-info #telephone{
+				text-align: center;
+				
+			}
+			#balance{
+				color: red;
+			}
+			
+			#recharge-botton{
+				background: green;
+				border-radius: 3px;
+				color: white;
+				font-size: 0.8em;
+				padding: 3px;
+				margin-left: 5px;
+			}
+			
+			#hot-button{
+				background: red;
+				border-radius: 3px;
+				color: white;
+				font-size: 0.8em;
+				padding: 3px;
+				margin-left: 5px;
+			}
+
+			
+			.button{
+				background: white;
+				text-align: center;
+				padding: 20px;
+			}
+			#logout{
+				width: 100%;
+				margin: auto;
+				height: 40px;
+				background: deepskyblue;
+				color: white;
+				border: 0;
+				border-radius: 5px;
+			}
+			
+			/*.mui-table-view li{
+				display: ;
+			}*/
+			
+			.red_spot{
+				position:absolute;
+				right:0;
+				bottom:40%;
+				margin-right:50px;
+				width:10px;
+				height:10px;
+				border-radius:10px;
+				background: red;
+			}
+			
+		</style>
+		<!--<script type="text/javascript">
+			mui.previewImage();
+		</script>-->
+	</body>
+
+</html>

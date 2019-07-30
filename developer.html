@@ -1,0 +1,255 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<!--<script src="lib/Vue2.0.js"></script>-->
+		<script src="js/mui.min.js"></script>
+		<script src="lib/template.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			var developer_list = [];
+		</script>
+	</head>
+
+	<body>
+		
+		<header class="mui-bar mui-bar-nav">
+		    <h1 class="mui-title">攻城狮</h1>
+		    <span class="mui-icon mui-icon-plus" style="float: right;" onclick="add()"></span>
+		    <!--<button type="button" class="mui-btn mui-btn-primary mui-btn-outlined" style="float:right">发布</button>-->
+		</header>
+		<div class="mui-content" id="vue-area">
+			<!--template渲染位置-->
+			<div id="template-area">
+				<div style="margin-top:50px">
+					<p style="text-align: center;">加载中...</p>
+					<p style="text-align: center;">如长时间未加载可尝试下拉刷新</p>
+				</div>
+			</div>
+			
+			<script type="text/html" id="template1">
+				
+				<% for(var i = 0;i < list.length;i++){ %>
+					
+				<ul class="mui-table-view" style="margin:5px 0;">
+				    <li class="mui-table-view-cell mui-media" id="<%= list[i].id %>" onclick="entry(this.id)">
+				        <a href="javascript:;">
+				        	
+				        	<img class="mui-media-object mui-pull-left" style="border-radius: 100px;width: 60px !important;height:42px !important;" src="<%= list[i].avatar %>">
+				            <div lass="mui-media-body">
+				            	<div>
+									<p style="display:inline;">名称：<%= list[i].name %></p>
+									<div style="display: inline;float: right;">
+										<div style="display: flex;">
+											<p style="color:orange;margin-right:15px;"><%= list[i].region %></p>		 
+											<p style="color:red;margin-right: 10px;"><%= list[i].static %></p>
+										</div>
+									</div>		
+				               </div>
+				                <p>出场费：<%= list[i].budget %></p> 
+				                <p>擅长领域：<%= list[i].lxing %></p>
+				            </div>
+				        </a>
+				    </li> 
+    			</ul>
+    			
+    			<% } %>
+			</script>
+		    
+			</div>
+			<div id="sheet1" class="mui-popover mui-popover-bottom mui-popover-action ">
+			    <!-- 可选择菜单 -->
+			    <ul class="mui-table-view">
+			      	<li class="mui-table-view-cell">
+			        	<a id="release-developer">发布攻城狮</a>
+			      	</li>
+			    </ul>
+			    	<!-- 取消菜单 -->
+			    <ul class="mui-table-view">
+			      	<li class="mui-table-view-cell">
+			        	<a href="#sheet1"><b>取消</b></a>
+			      	</li>
+			    </ul>
+			</div>
+		<script>
+			var pages = 1;
+			var count;
+			
+			// 列表查询获取
+			function search_request(){
+				
+				mui.ajax('http://fcjsz.fosota.com/public/api/index/gongchengshi.html',{
+				data:{
+					 page:pages,
+					 limit:10,
+				},
+				dataType:'json',//服务器返回json格式数据
+				type:'post',//HTTP请求类型
+				timeout:10000,//超时时间设置为10秒；
+				headers:{'Content-Type':'application/json'},	              
+				success:function(data){
+					// alert(JSON.stringify(data))
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					if(data.code == 200){
+//						mui.toast("developer post 200")
+						// alert(JSON.stringify(data))
+						var client = data.data.client;
+						count = data.data.count;
+						for(var i = 0;i<client.length;i++){
+							if(client[i].static == 1){
+								client[i].static = "忙碌"
+							}
+							else{
+								client[i].static = "空闲"
+							}
+							if((client[i].avatar).indexOf("/public") != -1){
+									client[i].avatar = "https://fcjsz.fosota.com"+client[i].avatar;
+							}
+							developer_list.push(client[i])
+						}
+//						
+						render()
+						}
+				},
+				error:function(xhr,type,errorThrown){
+					//异常处理；
+					mui.toast(type)
+					console.log(type);
+					if(type === "timeout"){
+						mui('.mui-content').pullRefresh().endPullupToRefresh(false); // 结束上拉加载
+						mui('.mui-content').pullRefresh().endPulldown();	// 结束下拉加载
+					}
+				}
+			});
+			}
+			
+			mui.plusReady(function(){
+				
+				search_request() 
+			})
+			
+			function add(){
+				mui('#sheet1').popover('toggle');
+			}
+			
+			// 攻城狮详情页面预加载
+// 			var produce_info = mui.preload({
+// 				url:"developer_info.html",
+// 				id:"developer_info.html",
+// 			})
+			
+			// 进入攻城狮详情页
+			function entry(id){
+				plus.storage.setItem("developer_id",id+"")
+//				mui.openWindow({
+//					url:"developer_info.html",
+//					id:"developer_info.html",
+//					createNew:true,
+//				})
+				var nwaiting = plus.nativeUI.showWaiting();  
+				webviewShow = plus.webview.create("developer_info.html");
+			}
+			
+			
+			
+			// 下拉刷新
+			mui.init({
+			  pullRefresh : {
+			    container:".mui-content",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+			    down : {
+			      style:'circle',//必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+			      color:'#2BD009', //可选，默认“#2BD009” 下拉刷新控件颜色
+			      height:'50px',//可选,默认50px.下拉刷新控件的高度,
+			      range:'100px', //可选 默认100px,控件可下拉拖拽的范围
+			      offset:'0px', //可选 默认0px,下拉刷新控件的起始位置
+			      auto: false,//可选,默认false.首次加载自动上拉刷新一次
+			      callback :function(){
+					developer_list = []  
+		      		setTimeout(
+		      			function(){
+		      				search_request()
+//		      				mui.toast("刷新完成")
+		      			},300);
+			      } //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+			    }
+			  }
+			});
+			
+			// 上拉加载
+			mui.init({
+			  pullRefresh : {
+			    container:".mui-content",//待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等
+			    up : {
+			      height:50,//可选.默认50.触发上拉加载拖动距离
+			      auto:false,//可选,默认false.自动上拉加载一次
+			      contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+			      contentnomore:'没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+			      callback :function(){
+			      		
+	      				var current_page = developer_list.length/10
+						if(current_page >=1){
+							pages = current_page+1;
+						}		
+//						mui.toast(pages+"")
+//						isfilter = false;
+	      				if(developer_list.length >= count){
+							mui.toast("没有更多数据了")
+							mui('.mui-content').pullRefresh().endPullupToRefresh(false); // 结束上拉加载
+						}else{
+//							mui.toast(count)
+							search_request();
+						}
+
+			      	}
+			  }
+			}
+			  });
+			  
+			
+			var release_developer = document.getElementById("release-developer");
+			release_developer.addEventListener("tap",function(){
+				add();
+//				mui.toast("1")
+				mui.openWindow({
+					url:"release/release-developer.html",
+			    	id:"release-developer.html",
+					createNew:true,
+			    	extras:{
+			    	}
+				})
+			});
+//		function release_developer(){
+//			add();
+//			mui.openWindow({
+//				url:"release/release-developer.html",
+//		    	id:"release-developer.html",
+//		    	extras:{
+//		    	}
+//			})
+//		}
+
+			
+			
+		</script>
+		<script>
+			// 模板渲染
+			function render(){
+				var template1 = document.getElementById('template1').innerHTML;
+				document.getElementById('template-area').innerHTML = template(template1, {list:developer_list});
+				mui('.mui-content').pullRefresh().endPullupToRefresh(false); // 结束上拉加载
+				mui('.mui-content').pullRefresh().endPulldown();	// 结束下拉加载
+			}
+			
+		</script>
+		<style>
+			.mui-table-view{
+				margin-bottom: 5px;
+			}
+		</style>
+	</body>
+
+</html>

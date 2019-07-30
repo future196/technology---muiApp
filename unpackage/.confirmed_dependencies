@@ -1,0 +1,188 @@
+{
+  "index.html": {
+    "resources": [
+      "lib/font-awesome-4.7.0/css/font-awesome.css",
+      "lib/font-awesome-4.7.0/fonts/fontawesome-webfont.woff2",
+      "lib/font-awesome-4.7.0/fonts/fontawesome-webfont.ttf",
+      "lib/font-awesome-4.7.0/fonts/fontawesome-webfont.woff",
+      "home.html",
+      "user.html"
+    ],
+    "refer": [
+      "home.html",
+      "user.html",
+      "need.html",
+      "developer.html",
+      "search.html",
+      "guide.html"
+    ]
+  },
+  "home.html": {
+    "refer": [
+      "produce_info.html",
+      "account/login.html"
+    ],
+    "resources": []
+  },
+  "developer.html": {
+    "refer": [
+      "developer_info.html",
+      "release/release-developer.html",
+      "release/release-need.html"
+    ],
+    "resources": []
+  },
+  "search.html": {
+    "resources": [
+      "search/cricle.html",
+      "search/message-queues.html"
+    ],
+    "refer": [
+      "search/share.html",
+      "search/cricle.html",
+      "search/hot.html",
+      "search/friend.html",
+      "search/message-queues.html"
+    ]
+  },
+  "search/share.html": {
+    "resources": [
+      "vedio/test.mp4"
+    ],
+    "refer": []
+  },
+  "search/friend.html": {
+    "refer": [
+      "dialog.html",
+      "account/login.html"
+    ],
+    "resources": []
+  },
+  "need.html": {
+    "refer": [
+      "produce_info.html",
+      "release/release-need.html"
+    ],
+    "resources": []
+  },
+  "search/message-queues.html": {
+    "refer": [
+      "dialog.html",
+      "release/release-cricle.html"
+    ],
+    "resources": []
+  },
+  "user.html": {
+    "refer": [
+      "user/personal-info.html",
+      "user/need-requestion.html",
+      "user/developer-requestion.html",
+      "user/need-release.html",
+      "user/need-order.html",
+      "user/developer-release.html",
+      "user/credit.html",
+      "user/developer-order.html",
+      "user/system-order.html",
+      "user/customer-service.html",
+      "user/help-feedback.html",
+      "user/like.html",
+      "account/login.html",
+      "user/buy_coin.html",
+      "user/about_us.html",
+      "user/change_icon.html"
+    ],
+    "resources": []
+  },
+  "user/personal-info.html": {
+    "refer": [
+      "user/personal-info.html"
+    ],
+    "resources": []
+  },
+  "user/need-release.html": {
+    "refer": [
+      "release/release-need.html",
+      "release/modify-need.html"
+    ],
+    "resources": []
+  },
+  "user/developer-release.html": {
+    "refer": [
+      "release/release-developer.html",
+      "release/modify-developer.html",
+      "developer_info.html"
+    ],
+    "resources": []
+  },
+  "release/release-developer.html": {
+    "refer": [
+      "release/release-developer.html"
+    ],
+    "resources": []
+  },
+  "release/release-need.html": {
+    "refer": [
+      "release/release-need.html"
+    ],
+    "resources": []
+  },
+  "account/login.html": {
+    "refer": [
+      "account/forget-password.html",
+      "account/register.html",
+      "account/login.html",
+      "index.html"
+    ],
+    "resources": []
+  },
+  "account/register.html": {
+    "refer": [
+      "account/register.html"
+    ],
+    "resources": []
+  },
+  "release/modify-need.html": {
+    "refer": [
+      "release/modify-need.html"
+    ],
+    "resources": []
+  },
+  "release/modify-developer.html": {
+    "refer": [
+      "release/modify-developer.html"
+    ],
+    "resources": []
+  },
+  "dialog.html": {
+    "resources": [
+      "img/video.png",
+      "img/gift.png",
+      "img/scimg.png"
+    ]
+  },
+  "user/need-requestion.html": {
+    "refer": [
+      "produce_info.html"
+    ]
+  },
+  "user/developer-requestion.html": {
+    "refer": [
+      "developer_info.html"
+    ]
+  },
+  "user/like.html": {
+    "refer": [
+      "produce_info.html"
+    ]
+  },
+  "search/cricle.html": {
+    "refer": [
+      "release/release-cricle.html"
+    ]
+  },
+  "user/buy_coin.html": {
+    "refer": [
+      "user/pay.html"
+    ]
+  }
+}

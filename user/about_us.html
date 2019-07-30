@@ -1,0 +1,236 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			var data_info = {};
+		</script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">关于我们</h1>
+		</header>
+		<div class="mui-content">
+		    <div id="logo">
+				<img src="../img/logo.jpg" />
+			</div>
+			<div style="text-align: center;">
+				<span style="color:deepskyblue;font-size: 20px;">非常技术宅</span>
+				<p>Version 1.0.0</p>
+				<button type="button" id="version_button" class="mui-btn" onclick="check_update()">检查更新</button>
+				<!-- <div style="margin: 10px;"><p id="complete" style="display: inline;">0M</p> / <p id="total" style="display: inline;">0M</p></div> -->
+				
+				<div id="new_grade" style="margin:20px;">
+					<p id="new_grade_content"></p>
+					<div id="download" hidden="hidden">
+						<div id="demo1" style="margin:20px auto;width: 200px;height: 3px;" class="mui-progressbar">
+							<span></span>
+						</div>
+						<p id="percent"></p>
+					</div>	
+				</div>
+				
+				
+			</div>
+			
+			<div style="position: fixed;width:100%;bottom: 0;text-align: center;">
+				<p>Copyright @ 2019 . All rights reserved. </p>
+				<p>广州孚索拓网络科技有限公司</p>
+
+			</div>
+		</div>
+		<script type="text/javascript">
+			
+			var new_grade = false;
+			var new_grade_content;
+			var is_download = false;
+			var versionName;
+			var versionCode;
+			var new_versionCode;
+			var new_versionName;
+			var download_url;
+			var file_size;
+			var file_name;
+			
+			mui("#demo1").progressbar({progress:0}).show();
+			
+			// 检查文件是否已存在
+			function check_exsit(){
+//				mui.toast(plus.storage.getItem("new_app_filename"))
+				if(plus.storage.getItem("new_app_filename") && plus.storage.getItem("new_app_filename") != ""){
+					plus.io.resolveLocalFileSystemURL(plus.storage.getItem("new_app_filename"),function(entry){
+   					if(entry.isFile){
+   						document.getElementById("new_grade_content").innerHTML = "下载完成,可更新至 v" + new_versionName;
+						document.getElementById("version_button").className = "mui-btn mui-btn-primary"
+						document.getElementById("version_button").innerHTML = "立即安装"
+   						new_grade = true;
+   						is_download = true;
+   					}else{	
+// 						check_update()
+   					}
+   					
+   				},function(e){});
+				}
+				change_status()
+			}
+			
+			mui.init({
+			    beforeback: function() {
+			　　　　 //获得父页面的webview
+			        var list = plus.webview.currentWebview().opener();
+			　　　　 //触发父页面的自定义事件(refresh),从而进行刷新
+			        mui.fire(list, 'refresh');
+			        //返回true,继续页面关闭逻辑
+			        return true;
+			    }
+			});
+			
+			
+			// 检查更新
+			function check_update(){
+				if(new_grade){
+					if(is_download){
+//						mui.toast("开始安装")
+						plus.runtime.install(plus.storage.getItem("new_app_filename"), {}, function(){  
+//							alert("install success !");  
+//							plus.storage.setItem("new_app_filename","")
+						}, function(){  
+							alert("安装失败，请重新下载");  
+							plus.storage.setItem("new_app_filename","")
+							is_download = false;
+						});  
+					}else{
+						dowload()
+					}
+				}else{
+   					mui.ajax('http://fcjsz.fosota.com/public/api/version/index.html',{
+   						data:{
+   							
+   						},
+   						dataType:'json',//服务器返回json格式数据
+   						type:'get',//HTTP请求类型
+   						timeout:10000,//超时时间设置为10秒；
+   						success:function(data){
+   							// alert(JSON.stringify(data))
+   							
+							if(versionCode < data.apk.varsion_num){
+								download_url = data.apk.link;
+								file_size = data.apk.size;
+								new_versionName = data.apk.varsion_name;
+								check_exsit()	
+							}else{
+								document.getElementById("new_grade_content").innerHTML = "已是最新版本"
+							}
+   						},
+   						error:function(xhr,type,errorThrown){
+   							mui.toast("请求失败,请检查网络状态")
+							console.log(type);
+   						}
+   					});
+				}
+			}
+			
+			// 根据检测是否下载进行操作
+			function change_status(){
+				if(is_download){
+					// alert("true")
+					document.getElementById("new_grade_content").innerHTML += ",可更新至 " + "v" + data.apk.varsion_name;
+				}else{
+					// alert("false")
+					new_grade = true;
+					new_grade_content = "version:1.0.2"
+					document.getElementById("version_button").className = "mui-btn mui-btn-success"
+					document.getElementById("version_button").innerHTML = "立即下载"
+					document.getElementById("new_grade_content").innerHTML = "可更新至 " + "v" + new_versionName;
+					
+				}
+			}
+			
+			
+			// 获取当前版本号
+			mui.plusReady(function () {
+			    	mui.getJSON("../manifest.json", null, function(manifest){
+			    		versionName = manifest.version.name;
+			    		versionCode = Number(manifest.version.code);
+			    		// mui.toast("版本名称："+versionName+"，版本code："+versionCode);
+			    	});
+			    	check_update()
+			})
+			
+			
+			// 开始下载
+			function dowload (url){
+				var options = {method:"GET"};
+				dtask = plus.downloader.createDownload(download_url, options );
+				dtask.addEventListener( "statechanged", function(task,status){              
+					switch(task.state) {
+						case 1: // 开始
+//							mui.toast("开始下载...")
+							console.log( "开始下载..." );
+						break;
+						case 2: // 已连接到服务器
+//							mui.toast("连接到服务器...")
+							console.log( "链接到服务器..." );
+							document.getElementById("new_grade_content").innerHTML = "正在下载: v"+new_versionName;
+							document.getElementById("download").removeAttribute("hidden")
+						break;
+						case 3: // 已接收到数据
+//							var percent = Math.floor(task.downloadedSize/task.totalSize*100)
+							var percent = Math.floor(task.downloadedSize/file_size*100)
+							mui("#demo1").progressbar().setProgress(percent);
+							document.getElementById("percent").innerHTML = percent + "%";
+
+	// 						complete = task.downloadedSize + "M"
+	// 						total = task.totalSize + "M"
+	// 						document.getElementById("complete").innerHTML = complete
+	// 						document.getElementById("total").innerHTML = total
+						break;
+						case 4: // 下载完成
+							mui.toast("下载完成！")
+							console.log( "下载完成！" );                 
+							console.log(task.totalSize)   
+							is_download = true;
+							document.getElementById("new_grade_content").innerHTML = "下载完成,可更新至 v" + new_versionName;
+							document.getElementById("version_button").className = "mui-btn mui-btn-primary"
+							document.getElementById("version_button").innerHTML = "立即安装"
+							plus.io.resolveLocalFileSystemURL(task.filename, function(entry) { 
+//										 alert(entry.toLocalURL()+"")
+										console.log(entry.toLocalURL())     //绝对地址                                      
+								   });
+							console.log(task.filename)
+//							alert(task.filename)
+							file_name = task.filename
+							plus.storage.setItem("new_app_filename",task.filename+"")
+						break;
+					}
+				} );
+				dtask.start();         
+			}
+
+	
+
+		</script>
+		<style type="text/css">
+			#logo{
+				width: 80px;
+				height:80px;
+				margin: 70px auto;
+				margin-bottom: 20px;
+			}
+			
+			#logo img{
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+	</body>
+
+</html>

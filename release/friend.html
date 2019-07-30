@@ -1,0 +1,327 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" href="../lib/font-awesome-4.7.0/css/font-awesome.min.css" />
+		
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init();
+		</script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">发现</h1>
+			<span class="mui-icon mui-icon-plus" style="float: right;" onclick="add()"></span>
+		</header>
+		<div id="button-group">	
+				<div id="message-queues" onclick="select(this)">消息</div>
+				<div id="friend" onclick="select(this)">附近宅友</div>
+				<div id="cricle" onclick="select(this)">宅友圈</div>
+			</div>
+		<div class="mui-content">
+		    <p id="login_null" style="text-align: center;margin-top: 140px;">您还未登录，请先登录才可查看哦</p>
+			
+			<div class="main" id="app-members">
+				
+
+				<div class="banner_comment" v-for="mms in members" >
+					<div v-bind:id="mms.id" onclick="entry(this.id)">
+						<p>
+							<img :src="mms.avatar" style="width: 70px;height: 70px;float: left;margin-left:10px;"/>
+						</p>
+						<div id="name">
+							<p>
+								<span style="color: #000;padding-left: 2px;font-size: 16px;">{{mms.nickname}}</span>
+							</p>
+							<p id="sex" v-if="mms.sex==1">
+								<span class="fa fa-mars" style="color: #fff;padding-left: 5px;"> {{mms.birth}}</span>
+							</p>
+							<p id="sex1" v-if="mms.sex==2">
+								<span class="fa fa-venus"  style="color: #fff;padding-left: 5px;"> {{mms.birth}}</span>
+							</p>
+							<p style="padding-top:2px;">{{mms.occupation}}</p>
+						</div>
+						<span style="float: right;margin-right: 10px;color: #b8b8b8;font-size: 14px;">0.5km</span>
+					</div>
+				</div>
+			    
+			   <!-- <div class="banner_comment" onclick="entry()">
+					<p>
+						<img src="../img/user-icon.jpg" style="width: 70px;height: 70px;float: left;margin-left:10px;"/>
+					</p>
+					<div id="name">
+						<p>
+							<span style="color: #000;padding-left: 2px;font-size: 16px;">好友名称</span>
+						</p>
+						<p id="sex1">
+							<span class="fa fa-venus" style="color: #fff;padding-left: 5px;">19</span>
+						</p>
+						<p style="padding-top:2px;">个性签名个性签名个性签名个性签名个性签名个性签名个性签名</p>
+					</div>
+					<span style="float: right;margin-right: 10px;color: #b8b8b8;font-size: 14px;">0.5km</span>
+				</div> -->
+				
+			</div>
+			
+			<div id="sheet1" class="mui-popover mui-popover-bottom mui-popover-action ">
+			    <!-- 可选择菜单 -->
+			    <ul class="mui-table-view">
+			      	<li class="mui-table-view-cell">
+			        	<a href="#">添加宅友</a>
+			      	</li>
+			      		<li class="mui-table-view-cell">
+			        	<a href="#">发布宅友圈</a>
+			      	</li>
+			    </ul>
+			    	<!-- 取消菜单 -->
+			    <ul class="mui-table-view">
+			      	<li class="mui-table-view-cell">
+			        	<a href="#sheet1"><b>取消</b></a>
+			      	</li>
+			    </ul>
+			</div>
+			
+		</div>
+		<!-- <div id="container" style="width:600px;height:600px"></div> -->
+		<script src="../lib/Vue2.0.js"></script>
+		<script>	
+//			mui.ready(function(){
+				mui.ajax('https://fcjsz.fosota.com/public/api/index/getlocation',{
+					data:{
+						x:'116.331398',
+						y:'39.897445'
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},	              
+					success:function(data){
+					   console.log(data);
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						console.log(type);
+					}
+				});
+				mui.ajax('https://fcjsz.fosota.com/public/api/index/getMembers',{
+					data:{
+						username:'username',
+						password:'password'
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},	              
+					success:function(data){
+						if(data.code==200){
+							var members = data.data.members;
+							var sex = data.data.sex;
+							var app4 = new Vue({
+							  el: '#app-members',
+							  data: {
+							  	sex:sex,
+							    members: members
+							  }
+							})
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						console.log(type);
+					}
+				});
+			});
+			// 聊天页面预加载
+			var produce_info = mui.preload({
+				url:"../dialog.html",
+				id:"dialog.html",
+			})		
+			function entry(id){
+				var login_status = plus.storage.getItem("login_status");
+				mui.toast(login_status)
+				if(login_status == "true"){
+					var order_id = id;
+					plus.storage.setItem('order_id', order_id); 
+					mui.openWindow({
+						url:"../dialog.html",
+						id:'dialog.html'
+					})		
+	    		}else{
+	    			mui.confirm("请先登录哦","附近宅友",["取消","立即登录"],function(e){
+	    				if(e.index == 1){		
+							mui.openWindow({
+							url:"../account/login.html",
+							id:"login.html",
+				})
+						}
+						else{
+							mui.toast("您已放弃联系")
+						}
+	    			})
+	    		}
+				
+			}
+			function select(obj){
+				plus.webview.hide("friend.html");
+				plus.webview.show(obj.id + ".html")	// 显示当前点击页面
+			}
+			
+			function add(){
+				mui('#sheet1').popover('toggle');
+			}
+		</script>
+		
+		<style>
+			body{
+				background: white;
+			}
+			.main{
+				margin-top: 50px;
+			}
+			#button-group{
+				width: 100%;
+				height: 40px;
+				margin-top:45px;
+				display: flex;
+				position: fixed;
+				top:0;
+				background: white;
+				z-index: 9;
+			}
+			#button-group div{
+				width: 33.3%;
+				text-align: center;
+				line-height: 40px;
+				border-radius: 4px;
+				
+			}
+			#cricle{
+				background: deepskyblue;
+				color: white;
+			}
+			#message-queues{
+				background: deepskyblue;
+				color: white;
+			}
+			#friend{
+				background: white;
+				color: deepskyblue;
+			}
+			
+			
+			body{
+				background: #fff;
+			}
+			.mui-content{
+				background: #fff;
+				margin: 0 0 50px 0;
+			}
+			.banner{
+				position: fixed;
+				width: 100%;
+				top: 0;
+			}
+			#btn1{
+				color: #fff;
+				border: none;
+				height: 40px;
+				line-height: 28px;
+				width: 50%;
+				float: left;
+				background: #66cbff;
+			}
+			#btn2{
+				color: #66cbff;
+				background: #fff;
+				border: none;
+				height: 40px;
+				line-height: 28px;
+				width: 50%;
+			}
+			#name{
+				width: 65%;
+				padding-left: 10px;
+				float: left;
+				margin-bottom: 20px;
+			}
+			#name p{
+				margin-bottom: 0;
+			}
+			#name p:nth-child(3){
+				overflow:hidden;
+				-webkit-line-clamp:1;
+				-webkit-box-orient: vertical;
+				word-break: break-all;
+				display: -webkit-box;
+				white-space: pre-wrap;
+			}
+			
+			.banner_comment{
+				margin-top:10px;
+				height: 82px;
+				border-bottom: 1px #f0f0f0 solid;
+			}
+			#sex{
+				width: 40px;
+				height: 20px;
+				background: #66cbff;
+				border-radius: 6px;
+				background-size: 11px 13px;
+				background-repeat: no-repeat;
+				margin: 7px 0 0 2px;
+			}
+			#sex1{
+				width: 40px;
+				height: 20px;
+				background: #ff81ac;
+				border-radius: 6px;
+				background-size: 11px 13px;
+				background-repeat: no-repeat;
+				margin: 7px 0 0 2px;
+			}
+			
+			@media only screen and (min-width: 320px) {
+				#name{
+					width: 59%;
+				}
+			}
+			@media only screen and (min-width: 360px) {
+				#name{
+					width: 64%;
+				}
+			}
+			@media only screen and (min-width: 375px) {
+				#name{
+					width: 65%;
+				}
+			}
+			@media only screen and (min-width: 411px) {
+				#name{
+					width: 68%;
+				}
+			}
+			@media only screen and (min-width: 414px) {
+				#name{
+					width: 68%;
+				}
+			}
+			@media only screen and (min-width: 768px) {
+				#name{
+					width: 81%;
+				}
+			}
+			@media only screen and (min-width: 1024px) {
+				#name{
+					width: 85%;
+				}
+			}
+		</style>
+	</body>
+</html>

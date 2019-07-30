@@ -1,0 +1,488 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<script src="lib/Vue2.0.js"></script>
+		<script src="js/mui.min.js"></script>
+		<script src="lib/template.js"></script>
+		<script type="text/javascript">
+			mui.init();
+//			var listview = [{id:"1",name:"美业公众号开发限深圳",type:"公众号",cost:"8000-1.5万元",limit:"3个月以上",datetime:"2019-01-26 01:27"},{id:"2",name:"地方麻将手机网页版（现成）",type:"公众号",cost:"8000-1.5万元",limit:"3个月以上",datetime:"2019-01-24 02:52"},{id:"3",name:"建筑物外观拍摄",type:"视频拍摄与制作",cost:"3000-8000元",limit:"1周",datetime:"2019-01-14 11:26"}]
+			var select_option = [];
+			var type_list = [];
+			var cost_list = [];
+			var limit_list = [];
+			var need_list = [];
+		</script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		    <h1 class="mui-title">首页</h1>
+		    <button id="login-button" style="float: right;margin-top:5px;border:0;background: deepskyblue;color: white;" onclick="add()">登录</button>
+		</header>
+		<div class="mui-content">
+			<form action="#" onsubmit="return search()">
+			    <div class="mui-input-row mui-search">		    	
+		    		<input type="search" id="search_text" oninput="text_input()" class="mui-input-clear" placeholder="搜索关键字">
+				</div>
+			</form>
+			<div class="mui-slider" id="my-slider">
+				<div class="mui-slider-group mui-slider-loop">
+					<!--支持循环，需要重复图片节点-->
+				    <div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img id="picture_pre" src="img/4.jpg" /></a></div>
+				    <div class="mui-slider-item"><a href="#"><img id="picture1" src="img/1.jpg" /></a></div>
+				    <div class="mui-slider-item"><a href="#"><img id="picture2" src="img/1.jpg" /></a></div>
+				    <div class="mui-slider-item"><a href="#"><img id="picture3" src="img/1.jpg" /></a></div>
+				    <div class="mui-slider-item"><a href="#"><img id="picture4" src="img/1.jpg" /></a></div>
+				    <!--支持循环，需要重复图片节点-->
+				    <div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img id="picture_end" src="img/1.jpg" /></a></div>
+				</div>
+				<!--添加小圆点-->
+				<div class="mui-slider-indicator">
+					<div class="mui-indicator mui-active"></div>
+					<div class="mui-indicator"></div>
+					<div class="mui-indicator"></div>
+					<div class="mui-indicator"></div>
+				</div>
+			</div>
+    		<marquee id="notify" behavior="scroll" scrollamount="4">系统提醒：经需求方同意。方可互相查看联系电话，线下交易，多放心眼，谨防上当受骗！</marquee>
+			<div id="select-bar">
+				<div id="select-bar-1" onclick="selected(this)">需求列表</div>
+				<!--<div id="select-bar-2" onclick="transtype(this)">招聘列表</div>-->
+			</div> 
+			<div id="select-option"> 
+				<select name="select"  id="select-type" onchange="selected(this)">					
+					<option value="" selected="true" id = "0">类型</option>
+					<option value="1" v-for="obj in type_list" :id="obj.id">{{ obj.title }}</option>
+				</select>
+
+				<select name="select"  id="select-cost" onchange="selected(this)">					
+					<option value="0" selected="true" id="0">费用</option>					
+					<option value="1" v-for="obj in cost_list" :id="obj.id">{{ obj.title }}</option>				
+
+				</select>
+				<select name="select"  id="select-limit" onchange="selected(this)">					
+					<option value="1" selected="true" id="0">期限</option>				
+					<option value="1" v-for="obj in limit_list" :id="obj.id">{{ obj.title }}</option>
+				</select>	
+				
+			</div>
+			
+			<!--template循环列表插入位置-->
+			<div id="templatelist">
+				<p style="text-align: center;">加载中...</p>
+				<p style="text-align: center;">如长时间未加载可尝试下拉刷新</p>
+			</div>
+			
+			<!--template.js模板引擎作用区-->
+			<script type="text/html" id="template1">
+				<ul class="mui-table-view">
+				<% for(var i = 0;i < list.length;i++){ %>
+					
+				    <li class="mui-table-view-cell mui-media">
+				        <a class="click_obj" id="<%= list[i].id %>" onclick="entry(this.id)" style="display: flex;">
+				            <img class="produce_face" src="https://fcjsz.fosota.com/<%= list[i].suolue %>">
+				            <div class="mui-media-body">
+				                <p><%= list[i].cp_name %></p>
+								<div style="display: flex;">
+									<p style="margin-right: 10px;">类型：<span style="color:red;"><%= list[i].lxing %></span></p>
+									<p>费用：<span style="color:red;"><%= list[i].budget %></span></p>
+								</div>	                
+				                <p>限期：<%= list[i].deadline %></p> 
+								<%
+									function add0(m){return m<10?'0'+m:m }
+									function format()
+									{
+									//shijianchuo是整数，否则要parseInt转换
+									var time = new Date(list[i].create_time*1000);
+									var y = time.getFullYear();
+									var m = time.getMonth()+1;
+									var d = time.getDate();
+									var h = time.getHours();
+									var mm = time.getMinutes();
+									var s = time.getSeconds();
+									return y+'-'+add0(m)+'-'+add0(d)+' '+add0(h)+':'+add0(mm)+':'+add0(s);
+									}
+								%>
+								
+				                <p>发布时间：<%= format() %></p>
+
+				            </div>
+				        </a>
+				    </li> 
+				    
+				<% } %>
+				</ul>
+			</script>
+ 		
+		</div>
+
+		<script>
+
+			var domain_name = "https://fcjsz.fosota.com/";
+			var search_text = "";
+			var type_id = 0;
+			var cost_id = 0;
+			var limit_id = 0;
+			var pages = 1;
+			var isfilter = false;
+			var isend = false;
+			var count;
+			
+			
+			// 首页请求方法
+			function request(){
+				mui.ajax('https://fcjsz.fosota.com/public/api/index/index',{
+					data:{
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'get',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},	              
+					success:function(data){
+//						mui.alert(JSON.stringify(data))
+						//服务器返回响应，根据响应结果，分析是否登录成功；
+//						mui.toast(data.msg)
+						if(data.code == 200){
+							
+							// 轮播图
+							document.getElementById("picture1").src = domain_name + data.data.banner[0].pic
+							document.getElementById("picture2").src = domain_name + data.data.banner[1].pic
+							document.getElementById("picture3").src = domain_name + data.data.banner[2].pic
+							document.getElementById("picture4").src = domain_name + data.data.banner[3].pic
+							document.getElementById("picture_pre").src = domain_name + data.data.banner[3].pic
+							document.getElementById("picture_end").src = domain_name + data.data.banner[0].pic
+							
+							// 公告
+							document.getElementById("notify").innerHTML = data.data.notice.brief
+							
+							// 筛选数据
+							select_option.push(data.data.od);
+							
+							for(var i = 0;i<data.data.ot1.length;i++){
+								type_list.push(data.data.ot1[i])
+							}
+							for(var i = 0;i<data.data.ot2.length;i++){
+								cost_list.push(data.data.ot2[i])
+							}
+							for(var i = 0;i<data.data.ot3.length;i++){
+								limit_list.push(data.data.ot3[i])
+							}
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						mui.toast("请求失败,请检查网络状态")
+							console.log(type);
+					}
+				});
+			}
+			
+			// 首页需求列表查询
+			function search_request(){
+				mui.ajax('http://fcjsz.fosota.com/public/api/index/index_post.html',{
+				data:{
+					 search_text:search_text,
+					 type_id:type_id,
+					 cost_id:cost_id,
+					 limit_id:limit_id,
+					 page:pages,
+				},
+				dataType:'json',//服务器返回json格式数据
+				type:'post',//HTTP请求类型
+				timeout:10000,//超时时间设置为10秒；
+				headers:{'Content-Type':'application/json'},	              
+				success:function(data){
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					if(data.code == 200){
+						// alert(JSON.stringify(data))
+						if(isfilter){
+							need_list = [];
+						}
+						count = data.data.count;
+						var product = data.data.product;
+//						alert(pages+"\n"+JSON.stringify(data.data))
+						for(var i = 0;i<product.length;i++){
+								need_list.push(product[i])
+						}
+						render()
+						}
+				},
+				error:function(xhr,type,errorThrown){
+					//异常处理；
+					mui.toast("请求失败,请检查网络状态")
+					console.log(type);
+					if(type === "timeout"){
+						mui('.mui-content').pullRefresh().endPullupToRefresh(false); // 结束上拉加载
+						mui('.mui-content').pullRefresh().endPulldown();	// 结束下拉加载
+					}
+				}
+			});
+			}
+			
+			// 搜索框文本输入时变化
+			function text_input(){
+				var search_input = document.getElementById("search_text");
+				search_text = search_input.value;
+			} 
+			
+			
+			
+			//搜索时执行
+			function search(){
+				var search_input = document.getElementById("search_text");
+				search_text = search_input.value;
+				mui.toast(search_text)
+				search_input.blur()
+				isfilter = true;
+				need_list = []
+				render()
+				search_request();
+//				return false;
+			} 
+			
+			// 判断登录状态
+			function check_status(){
+				if(plus.storage.getItem("login_status")){
+					if(plus.storage.getItem("login_status") == "true"){
+						document.getElementById("login-button").setAttribute("hidden","hidden")
+					}
+					else{
+						document.getElementById("login-button").removeAttribute("hidden")
+					}
+				}
+				else{
+					plus.storage.setItem("login_status","false")
+				}
+			}
+			
+			// 加载页面结束自动执行
+			mui.plusReady(function(){
+				// 首次启动默认登录状态为false
+				check_status()
+				request()
+				search_request()
+				
+				})
+			
+
+			// 设置宽等于屏幕的宽，高为宽的一半
+			var myslider = document.getElementById("my-slider");
+			var width = document.body.clientWidth-30;
+			var height = Math.ceil(width/2);
+			myslider.style.width = width.toString() + "px";
+			myslider.style.height = height.toString() + "px";
+			
+			//获得slider插件对象
+			var gallery = mui('.mui-slider');
+			gallery.slider({
+			  interval:2000//自动轮播周期，若为0则不自动播放，默认为0；
+			});
+			
+			// 下拉刷新
+			mui.init({
+			  pullRefresh : {
+			    container:".mui-content",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+			    down : {
+			      style:'circle',//必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+			      color:'#2BD009', //可选，默认“#2BD009” 下拉刷新控件颜色
+			      height:'50px',//可选,默认50px.下拉刷新控件的高度,
+			      range:'100px', //可选 默认100px,控件可下拉拖拽的范围
+			      offset:'0px', //可选 默认0px,下拉刷新控件的起始位置
+			      auto: false,//可选,默认false.首次加载自动上拉刷新一次
+			      callback :function(){
+			      	setTimeout(
+		      			function(){
+  							request()
+							search_request()
+		      			},300);
+			      	
+	      				
+			      } //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+			    }
+			  }
+			});
+			
+			// 上拉加载更多
+			mui.init({
+			  pullRefresh : {
+			    container:".mui-content",//待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等
+			    up : {
+			      height:50,//可选.默认50.触发上拉加载拖动距离
+			      auto:false,//可选,默认false.自动上拉加载一次
+			      contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+			      contentnomore:'没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+			      callback :function(){		
+	      				var current_page = need_list.length/5
+						if(current_page >=1){
+							pages = current_page+1;
+						}else{
+							isend = true;
+						}		
+						isfilter = false;
+						if(need_list.length >= count){
+							mui.toast("没有更多数据了")
+							mui('.mui-content').pullRefresh().endPullupToRefresh(false); // 结束上拉加载
+						}else{
+							if(!isend){
+								search_request();
+							}			
+						}
+	      								
+			      	}
+			  }
+			}
+			  });
+			  
+			//点击触发窗口打开
+			function entry(id){
+				plus.storage.setItem("need_id",id+"")
+//				mui.openWindow({
+//					url:"produce_info.html",
+//			    	id:"produce_info.html",
+//
+//				})
+				var nwaiting = plus.nativeUI.showWaiting();  
+				webviewShow = plus.webview.create("produce_info.html"); 
+				
+			}
+			
+//			// 预加载详情页面
+//			var page = mui.preload({
+//			    url:"produce_info.html",
+//			    id:"produce_info.html",
+//			});
+//			
+			
+			// select筛选
+			function selected(obj){
+				var object = document.getElementById(obj.id);
+				if(obj.id == "select-type"){
+					var index = object.selectedIndex;
+					type_id = object[index].id;
+				}
+				if(obj.id == "select-cost"){
+					var index = object.selectedIndex;
+					cost_id = object[index].id;
+				}
+				if(obj.id == "select-limit"){
+					var index = object.selectedIndex;
+					limit_id = object[index].id;
+				}
+				isfilter = true;
+				search_request();
+			}
+			
+			
+			// 模板渲染
+			function render(){
+				var template1 = document.getElementById('template1').innerHTML;
+				document.getElementById('templatelist').innerHTML = template(template1, {list:need_list});
+				mui('.mui-content').pullRefresh().endPullupToRefresh(false); // 结束上拉加载
+				mui('.mui-content').pullRefresh().endPulldown();	// 结束下拉加载
+			}
+
+			// 点击登录按钮
+			var login_button = document.getElementById("login-button");
+			login_button.addEventListener("tap",function(){
+				
+				mui.openWindow({
+					url:"account/login.html",
+					id:"login.html",
+					createNew:true,
+				})
+			});
+
+		</script>
+		
+		<script>
+			new Vue({
+				el:"#select-option",
+				data:{
+					type_list:type_list,
+					cost_list:cost_list,
+					limit_list:limit_list,
+				}
+			})
+		</script>
+
+		<style> 
+			.mui-search{
+				margin-top:5px;
+				margin-left: 5px;
+				margin-right: 5px;
+				display:flex;
+			}
+			
+			.mui-slider{
+				margin:0 auto;
+				border-radius: 10px;
+			}
+
+			.mui-slider-item img{
+				display: wrap;
+			}
+			marquee{
+				background: deepskyblue;
+				color: #FFFFFF;
+				margin: 10px;
+			}
+			#select-bar{
+				height:45px;
+				width:100%;
+				border:1px solid #F0F0F0;
+				margin:0 auto;
+				display: table;
+				border-bottom: 0;
+			}
+			#select-bar div{
+				display: table-cell;
+				text-align: center;
+				vertical-align: middle;
+			}
+			#select-bar-1{
+				background: deepskyblue;
+				color: white;
+			}
+			
+			#select-bar-2{
+				background: white;
+				color: #007AFF;
+			}
+			#select-option{
+				display: flex;
+				width:100%;
+				margin: 0 auto;
+				background: ;
+			}
+			#select-cost{
+				margin-left:1px;
+				margin-right: 1px;
+			}
+			
+			select{
+				background-image: url(img/select-down.png);
+				background-size: 100%;
+				border: 1px solid grey;		
+			}
+
+			.mui-table-view{
+				margin-top:-15px;
+			}
+			
+			.produce_face{
+				width: 80px;
+				height: 80px;
+				margin-right: 10px;
+				border-radius: 100px;
+			}
+			
+		</style>
+	</body>
+
+</html>

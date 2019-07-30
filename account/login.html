@@ -1,0 +1,220 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init()
+		</script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">用户登录</h1>
+		</header>
+		<div class="mui-content">
+			<div class="main-content">
+				<div id="logo">
+					<img src="../img/logo.jpg" />
+				</div>
+				
+				<form class="mui-input-group" onsubmit="return form_check()">
+				    <div class="mui-input-row">
+				        <label>手机号码</label>
+				    <input id="telephone" type="number" class="mui-input-clear" placeholder="请输入手机号码">
+				    </div>
+				    <div class="mui-input-row">
+				        <label>账号密码</label>
+				        <input id="password" type="password" class="mui-input-password" placeholder="请输入密码">
+				    </div>
+				    <div class="mui-button-row">
+			        <button id="login-button" type="submit" class="mui-btn mui-btn-primary" >立即登录</button>	        
+			    </div>
+			</form>
+			
+			<div class="bottom">
+				<a id="forget-password" style="inline;float:left">忘记密码？</a>
+				<a id="register" style="inline;float:right">还没有账号？</a>
+			</div>
+			</div>
+			
+		</div>
+		
+		<script>
+			var location_addr;
+			
+			var forget_password = document.getElementById("forget-password");
+			forget_password.addEventListener("tap",function(){
+				mui.openWindow({
+					url:"forget-password.html",
+					id:"forget-password.html",
+				})
+			});
+			
+			var register = document.getElementById("register");
+			register.addEventListener("tap",function(){
+				mui.openWindow({
+					url:"register.html",
+					id:"register.html",
+				})
+			});
+			
+			function check_telephone(){
+				var telephone = document.getElementById("telephone");
+				if(telephone.value == ""){
+					mui.alert("账号不能为空");
+					return false;
+				}
+				else{
+					if(telephone.value.length == 11){
+						return true;
+					}
+					else{
+						mui.alert("手机号码为11位！");
+						return false;
+					}
+				}
+			}
+			
+			function check_password(){
+				var password = document.getElementById("password");
+				if(password.value == ""){
+					mui.alert("密码不能为空！")
+					return false;
+				}
+				else{
+					return true;
+				}
+			}	
+			
+			// 获取经纬度（javascript百度地图api）
+			function long_lati_request(){
+				plus.geolocation.getCurrentPosition(translatePoint,function(e){
+//                  mui.toast("异常:" + e.message);
+       			});
+			}
+			function translatePoint(position){
+				currentLon = position.coords.longitude;
+			 	currentLat= position.coords.latitude;
+			 	location_addr = currentLon +","+currentLat
+//			 	mui.toast(location_addr+"0000")
+			}
+			
+			mui.plusReady(function(){
+				long_lati_request();
+			})
+			
+			function form_check(){
+				var telephone_check = check_telephone();
+				var password_check = check_password();
+				
+				if(telephone_check && password_check){
+					mui.toast("登录中");
+//					alert(location_addr)
+					var telephone = document.getElementById("telephone").value;
+					var pass_word = document.getElementById("password").value;
+					mui.ajax('https://fcjsz.fosota.com/public/api/login/index',{
+						data:{
+							member_phone:telephone,
+							password:pass_word,
+							location:location_addr,
+						},
+						dataType:'json',//服务器返回json格式数据
+						type:'post',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						headers:{'Content-Type':'application/json'},	              
+						success:function(data){	
+//							 alert(JSON.stringify(data))
+							if(data.code==200){
+								mui.toast("登录成功")
+								
+								var webview = plus.webview.getWebviewById("home.html");
+								webview.evalJS("check_status()")
+								var webview2 = plus.webview.getWebviewById("user.html");
+								webview2.evalJS("check_status()")
+								var webview3 = plus.webview.getWebviewById("message-queues.html");
+								try{
+									webview3.evalJS("action()")
+								}catch(e){
+									//TODO handle the exception
+								}
+								var webview4 = plus.webview.getWebviewById("friend.html");
+								try{
+									webview4.evalJS("check_login()")
+								}catch(e){
+									//TODO handle the exception
+								}
+								
+								
+//								alert(JSON.stringify(data))
+								plus.storage.setItem("user_name",data.data.member_name+"");
+								plus.storage.setItem("user_telephone",data.data.member_phone+"");
+								
+								if((data.data.avatar+"").indexOf("/public") != -1){
+									plus.storage.setItem("user_icon","https://fcjsz.fosota.com"+data.data.avatar+"");
+								}else{
+									plus.storage.setItem("user_icon",data.data.avatar+"");
+								}
+								plus.storage.setItem("user_nickname",data.data.nickname+"");
+								plus.storage.setItem("user_money",data.data.money+"");
+								plus.storage.setItem("user_sex",data.data.sex+"");
+								plus.storage.setItem("user_birth",data.data.birth+"");
+								plus.storage.setItem("user_identity",data.data.nric+"");
+								plus.storage.setItem("user_company",data.data.company+"");
+								plus.storage.setItem("user_location",data.data.location+"");
+								plus.storage.setItem("user_post",data.data.occupation+"")
+								
+								plus.storage.setItem("user_id",JSON.stringify(data.data.id))
+								plus.storage.setItem('member', JSON.stringify(data.data));  // 
+								plus.storage.setItem('personal_info',data.data.toString()); 
+								plus.storage.setItem("login_status","true");
+								// alert(plus.storage.getItem("user_icon"))
+								mui.back()
+							}
+							else{
+								mui.alert(data.msg,"登录")
+							}
+						},
+						error:function(xhr,type,errorThrown){
+							//异常处理；
+							console.log(type);
+						}
+					});
+					return false;
+				}else{
+					return false;
+				}
+			}
+			
+			
+		</script>
+		<style>
+			.main-content{
+				margin: 30px;
+			}
+			#login-button{
+				width: 90%;
+			}
+			.bottom{
+				margin: 3px;
+			}
+			#logo{
+				width: 80px;
+				height:80px;
+				margin: auto;
+				margin-bottom: 20px;
+			}
+			
+			#logo img{
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+	</body>
+
+</html>

@@ -1,0 +1,249 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<script src="lib/template.js"></script>
+		<script src="js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			var listview = [{id:"1",name:"美业公众号开发限深圳",type:"公众号",cost:"8000-1.5万元",limit:"3个月以上",datetime:"2019-01-26 01:27"},{id:"2",name:"地方麻将手机网页版（现成）",type:"公众号",cost:"8000-1.5万元",limit:"3个月以上",datetime:"2019-01-24 02:52"},{id:"3",name:"建筑物外观拍摄",type:"视频拍摄与制作",cost:"3000-8000元",limit:"1周",datetime:"2019-01-14 11:26"}]
+			var need_list = [];
+		</script>
+	</head>
+
+	<body>
+		
+		<header class="mui-bar mui-bar-nav">
+		    <h1 class="mui-title">需求</h1>
+		    <span class="mui-icon mui-icon-plus" style="float: right;" onclick="add()"></span>
+		</header>
+		<div class="mui-content">
+			<!--template循环列表插入位置-->
+			<div id="templatelist">
+				<div style="margin-top:50px">
+					<p style="text-align: center;">加载中...</p>
+					<p style="text-align: center;">如长时间未加载可尝试下拉刷新</p>
+				</div>
+			</div>
+			
+			<!--template.js模板引擎作用区-->
+			<script type="text/html" id="template1">
+				
+				<% for(var i = 0;i < list.length;i++){ %>
+					<ul class="mui-table-view" style="margin:5px 0;">
+				    <li class="mui-table-view-cell mui-media">
+				        <a class="click_obj" id="<%= list[i].id %>" onclick="entry(this.id)" style="display: flex;">
+				            <img class="produce_face" src="https://fcjsz.fosota.com/<%= list[i].suolue %>">
+				            <div class="mui-media-body">
+				                <p><%= list[i].cp_name %></p>
+				                <div style="display: flex;">
+				                	<p style="margin-right: 10px;">类型：<span style="color: red;"><%= list[i].lxing %></span></p>
+				                	<p>费用：<span style="color:red;"><%= list[i].budget %></span></p>
+				                </div>
+				                <p>限期：<%= list[i].deadline %></p> 
+				                <%
+									function add0(m){return m<10?'0'+m:m }
+									function format()
+									{
+									//shijianchuo是整数，否则要parseInt转换
+									var time = new Date(list[i].create_time*1000);
+									var y = time.getFullYear();
+									var m = time.getMonth()+1;
+									var d = time.getDate();
+									var h = time.getHours();
+									var mm = time.getMinutes();
+									var s = time.getSeconds();
+									return y+'-'+add0(m)+'-'+add0(d)+' '+add0(h)+':'+add0(mm)+':'+add0(s);
+									}
+								%>
+				                
+				                <p>发布时间：<%= format() %></p>
+				            </div>
+				        </a>
+				    </li> 
+	    		</ul>
+				<% } %>
+				
+			</script>
+			
+			
+			<div id="sheet1" class="mui-popover mui-popover-bottom mui-popover-action ">
+			    <!-- 可选择菜单 -->
+			    <ul class="mui-table-view">
+			      		<li class="mui-table-view-cell">
+			        	<a id="release-need">发布需求</a>
+			      	</li>
+			    </ul>
+			    	<!-- 取消菜单 -->
+			    <ul class="mui-table-view">
+			      	<li class="mui-table-view-cell">
+			        	<a href="#sheet1"><b>取消</b></a>
+			      	</li>
+			    </ul>
+			</div>
+			
+		</div>
+		<script>
+			var domain_name = "https://fcjsz.fosota.com/";
+			var pages = 1;
+			
+			// 列表查询获取
+			function search_request(){
+				mui.ajax('http://fcjsz.fosota.com/public/api/index/index_post.html',{
+				data:{
+					 page:pages,
+				},
+				dataType:'json',//服务器返回json格式数据
+				type:'post',//HTTP请求类型
+				timeout:10000,//超时时间设置为10秒；
+				headers:{'Content-Type':'application/json'},	              
+				success:function(data){
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					if(data.code == 200){
+//						mui.toast("post 200")
+						count = data.data.count;
+						var product = data.data.product;
+						for(var i = 0;i<product.length;i++){
+								need_list.push(product[i])
+						}
+						render()
+						}
+				},
+				error:function(xhr,type,errorThrown){
+					//异常处理；
+					mui.toast("请求失败,请检查网络状态")
+					console.log(type);
+					plus.nativeUI.closeWaiting();
+					mui('.mui-content').pullRefresh().endPullupToRefresh(false); // 结束上拉加载
+					mui('.mui-content').pullRefresh().endPulldown();	// 结束下拉加载
+				}
+			});
+			}
+			
+			mui.plusReady(function(){
+				
+				search_request()
+			})
+			
+			// 下拉刷新
+			mui.init({
+			  pullRefresh : {
+			    container:".mui-content",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+			    down : {
+			      style:'circle',//必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+			      color:'#2BD009', //可选，默认“#2BD009” 下拉刷新控件颜色
+			      height:'50px',//可选,默认50px.下拉刷新控件的高度,
+			      range:'100px', //可选 默认100px,控件可下拉拖拽的范围
+			      offset:'0px', //可选 默认0px,下拉刷新控件的起始位置
+			      auto: false,//可选,默认false.首次加载自动上拉刷新一次
+			      callback :function(){
+			      	setTimeout(
+		      			function(){
+  							need_list = []
+							search_request()
+//		      				mui.toast("刷新完成")
+		      			},300);
+			      		
+			      		
+			      } //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+			    }
+			  }
+			});
+			
+			// 上拉加载更多
+			mui.init({
+			  pullRefresh : {
+			    container:".mui-content",//待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等
+			    up : {
+			      height:50,//可选.默认50.触发上拉加载拖动距离
+			      auto:false,//可选,默认false.自动上拉加载一次
+			      contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+			      contentnomore:'没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+			      callback :function(){
+						
+	      				var current_page = need_list.length/5
+						if(current_page >=1){
+							pages = current_page+1;
+						}		
+	      				if(need_list.length >= count){
+							mui.toast("没有更多数据了")
+							mui('.mui-content').pullRefresh().endPullupToRefresh(false); // 结束上拉加载
+						}else{
+//							mui.toast(count)
+							search_request();
+						}
+			      	}
+			  }
+			}
+			  });
+			
+			
+			// 模板渲染
+			function render(){
+				var template1 = document.getElementById('template1').innerHTML;
+				document.getElementById('templatelist').innerHTML = template(template1, {list:need_list});
+				mui('.mui-content').pullRefresh().endPullupToRefresh(false); // 结束上拉加载
+				mui('.mui-content').pullRefresh().endPulldown();	// 结束下拉加载
+			}
+			
+// 			// 预加载详情页面
+// 			var page = mui.preload({
+// 			    url:"produce_info.html",
+// 			    id:"produce_info.html",
+// 			});
+			
+			//点击触发窗口打开
+			function entry(id){
+				plus.storage.setItem("need_id",id+"")
+//				mui.toast(id)
+//				mui.openWindow({
+//					url:"produce_info.html",
+//			    	id:"produce_info.html",
+//					createNew:true,
+////			    	extras:{
+////						id:listview[index].id,
+////						name:listview[index].name,
+////						type:listview[index].type,
+////						cost:listview[index].cost,
+////						limit:listview[index].limit,
+////						datetime:listview[index].datetime,
+////			    	}
+//			})
+				var nwaiting = plus.nativeUI.showWaiting();  
+				webviewShow = plus.webview.create("produce_info.html"); 
+			}
+			
+			// 右上角点击弹出操作表
+			function add(){
+				mui('#sheet1').popover('toggle');
+			}
+			
+			var release_need = document.getElementById("release-need");
+			release_need.addEventListener("tap",function(){
+				add();
+				mui.openWindow({
+					url:"release/release-need.html",
+			    	id:"release-need.html",
+					createNew:true,
+			    	extras:{
+			    	}
+				})
+			});
+
+		</script>
+		<style type="text/css">
+			.produce_face{
+				width: 80px;
+				height: 80px;
+				margin-right: 10px;
+				border-radius: 100px;
+			}
+			
+		</style>
+	</body>
+
+</html>

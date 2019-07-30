@@ -1,0 +1,1101 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/dialog.css"/>
+		<link rel="stylesheet" type="text/css" href="css/iconfont.css"/>
+		<link rel="stylesheet" type="text/css" href="css/preview.css"/>
+		<script src="js/mui.min.js"></script>
+		<script type="text/javascript" src="js/swfobject.js"></script>
+        <script type="text/javascript" src="js/web_socket.js"></script>
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/jquery-sinaEmotion-2.1.0.min.js"></script> 
+        <script src="js/mui.zoom.js"></script>
+		<script src="js/mui.previewimage.js"></script>
+        <style type="text/css">
+        	.back{border:1px dashed #00FFFF;background-color:#F2DEDE;border-radius:1em;}
+        </style>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title"></h1>
+		</header>
+		<div class="mui-content" id="mui-content"> 
+			
+			
+			<div id="asd" style="width: 100%;overflow: auto;margin-bottom: 40px;">
+  				
+			</div>
+			
+			
+		</div>
+		
+		<div id="footer">
+				<img src="img/voice.png" id="footer_img1"/>
+				<input type="text" id="footer_text" onclick="foc()"/>  
+				<img src="img/jia.png" id="footer_img2"/>
+				<img src="img/expression.png" id="footer_img3"/>
+				<input type="button" value="发送" id="footer_btn"/>
+		</div>
+		<div id="contentd1">
+			<div style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 96px;">
+				<input type="button" name="" id="btn1" value="" />
+				<p style="text-align: center;padding-top: 5px;">图片</p>
+				<input type="file" name="file" id="file" style="display: none">
+			</div>
+			<div style="width: 25%;text-align: center;margin-top: 15px;float: left;">
+				<input type="button" name="" id="btn2" value="" />
+				<p style="text-align: center;padding-top: 5px;">送礼物</p>
+			</div>
+			<div style="width: 25%;text-align: center;margin-top: 15px;float: left;">
+				<input type="button" name="" id="btn3" value="" />
+				<p style="text-align: center;padding-top: 5px;">小视频</p>
+				<input type="file" name="video" id="videofile" style="display: none">
+			</div>
+		</div>
+		<div id="contentd2">
+			<p style="margin-bottom: 0;background: #fff;height: 50px;line-height: 50px;padding-left: 15px;border-bottom: 1px #f0f0f0 solid;">
+				<span>选点礼物送吧</span>
+				<span>
+					<img src="img/x.png" id="img_x" style="float: right;width: 20px;height: 20px;margin: 15px 15px 0 0;"/>
+				</span>
+			</p>
+			
+			<div class="mui-slider">
+			    <div id="sliderProgressBar" class="mui-slider-progress-bar mui-col-xs-6"></div>
+			    <div class="mui-slider-group">
+			        <div id="item1" class="mui-slider-item mui-control-content mui-active">
+			            <div id="box1">
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn11" gift='{"money":"50","gift":"[tm_1]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">鲜花</p>
+								<p id="qian1">50</p>
+							</div>
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn12" gift='{"money":"50","gift":"[tm_2]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">钻石</p>
+								<p id="qian2">50</p>
+							</div>
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift"  id="btn13" gift='{"money":"50","gift":"[tm_3]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">666</p>
+								<p id="qian3">50</p>
+							</div>
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn14" gift='{"money":"50","gift":"[tm_4]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">平安果</p>
+								<p id="qian4">50</p>
+							</div> 
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn15" gift='{"money":"50","gift":"[tm_5]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">谢谢你</p>
+								<p id="qian5">50</p>
+							</div>
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn16" gift='{"money":"50","gift":"[tm_6]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">圣诞树</p>
+								<p id="qian6">50</p>
+							</div>
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn17" gift='{"money":"50","gift":"[tm_7]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">烟花</p>
+								<p id="qian7">50</p>
+							</div>
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn18" gift='{"money":"50","gift":"[tm_8]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">一起吃鸡</p>
+								<p id="qian8">50</p>
+							</div>
+							<div id="banner_btn">
+								<span class="on" index="1"></span>
+								<span index="2"></span>
+								<span index="3"></span>
+							</div>
+						</div>
+			        </div>
+			        <div id="item2" class="mui-slider-item mui-control-content">
+			            <div id="box2">
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn21" gift='{"money":"50","gift":"[tm_9]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">幸运星</p>
+								<p id="qian1">50</p>
+							</div>
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn22" gift='{"money":"50","gift":"[tm_10]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">抱抱熊</p>
+								<p id="qian2">50</p>
+							</div>
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn23" gift='{"money":"50","gift":"[tm_11]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">节节高升</p>
+								<p id="qian3">50</p>
+							</div>
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn24" gift='{"money":"50","gift":"[tm_12]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">蛋糕</p>
+								<p id="qian4">50</p>
+							</div>
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn25" gift='{"money":"50","gift":"[tm_13]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">打Call</p>
+								<p id="qian5">50</p>
+							</div>
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn26" gift='{"money":"50","gift":"[tm_14]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">巧克力</p>
+								<p id="qian6">50</p>
+							</div>
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn27" gift='{"money":"50","gift":"[tm_15]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">棒棒糖</p>
+								<p id="qian7">50</p>
+							</div>
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn28" gift='{"money":"50","gift":"[tm_16]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">比心</p>
+								<p id="qian8">50</p>
+							</div>
+							<div id="banner_btn">
+								<span index="1"></span>
+								<span class="on" index="2"></span>
+								<span index="3"></span>
+							</div>
+						</div>
+			        </div>
+			        <div id="item3" class="mui-slider-item mui-control-content">
+			            <div id="box3">
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn31" gift='{"money":"50","gift":"[tm_1]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">鲜花</p>
+								<p id="qian1">50</p>
+							</div>
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn32" gift='{"money":"50","gift":"[tm_2]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">钻石</p>
+								<p id="qian2">50</p>
+							</div>
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn33" gift='{"money":"50","gift":"[tm_3]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">666</p>
+								<p id="qian3">50</p>
+							</div>
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn34" gift='{"money":"50","gift":"[tm_4]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">平安果</p>
+								<p id="qian4">50</p>
+							</div>
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn35" gift='{"money":"50","gift":"[tm_5]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">谢谢你</p>
+								<p id="qian5">50</p>
+							</div>
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn36" gift='{"money":"50","gift":"[tm_6]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">圣诞树</p>
+								<p id="qian6">50</p>
+							</div>
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn37" gift='{"money":"50","gift":"[tm_7]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">烟花</p>
+								<p id="qian7">50</p>
+							</div>
+							<div class="bg-gift" style="width: 25%;text-align: center;margin-top: 15px;float: left;height: 107px;">
+								<input type="button" name="" class="btn-gift" id="btn38" gift='{"money":"50","gift":"[tm_8]"}' value="" />
+								<p style="text-align: center;padding-top: 5px;margin-bottom: 0;">一起吃鸡</p>
+								<p id="qian8">50</p>
+							</div>
+							<div id="banner_btn">
+								<span index="1"></span>
+								<span index="2"></span>
+								<span class="on" index="3"></span>
+							</div>
+						</div>
+			        </div>
+			    </div>
+			</div>	
+			
+			<div style="height: 50px;line-height: 50px;position: absolute;bottom: 0;width: 100%;border-top: 1px #f0f0f0 solid;;">
+				<p id="czhi">
+					<span style="font-size: 12px;" class="money">0</span>
+					<span style="padding-left: 15px;font-size: 12px;" class="chongzhi">去充值&gt;</span>
+				</p>
+				<input type="button" id="zengsong" value="赠送" style="background: #66cbff;color: #fff;border: none;float: right;margin: 10px 20px 0 0;"/>
+			</div>
+		</div>
+		
+		<div id="contentd3">
+			<div class="mui-slider">
+			    <div id="sliderProgressBar" class="mui-slider-progress-bar mui-col-xs-6"></div>
+			    <div class="mui-slider-group">
+			        <div id="item1" class="mui-slider-item mui-control-content mui-active">
+			            <div id="" style="height: 200px;position: relative;">
+			            	<div>
+			            		<img src="qqFace/arclist/1.gif" emoj='[em_1]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/2.gif" emoj='[em_2]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/3.gif" emoj='[em_3]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/4.gif" emoj='[em_4]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/5.gif" emoj='[em_5]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/6.gif" emoj='[em_6]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/7.gif" emoj='[em_7]' class="x66" style="width: 30px;height: 30px;"/>
+			            	</div>
+			            	<div>
+			            		<img src="qqFace/arclist/8.gif" emoj='[em_8]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/9.gif" emoj='[em_9]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/10.gif" emoj='[em_10]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/11.gif" emoj='[em_11]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/12.gif" emoj='[em_12]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/13.gif" emoj='[em_13]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/14.gif" emoj='[em_14]' class="x66" style="width: 30px;height: 30px;"/>
+			            	</div>
+			            	<div>
+			            		<img src="qqFace/arclist/15.gif" emoj='[em_15]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/16.gif" emoj='[em_16]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/17.gif" emoj='[em_17]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/18.gif" emoj='[em_18]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/19.gif" emoj='[em_19]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/20.gif" emoj='[em_20]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/21.gif" emoj='[em_21]' class="x66" style="width: 30px;height: 30px;"/>
+			            	</div>
+			            	<div id="bq">
+								<span class="on" index="1"></span>
+								<span index="2"></span>
+								<span index="3"></span>
+							</div>
+			            </div>
+			        </div>
+			        <div id="item2" class="mui-slider-item mui-control-content">
+			            <div id="" style="height: 200px;position: relative;">
+			            	<div>
+			            		<img src="qqFace/arclist/21.gif" emoj='[em_21]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/22.gif" emoj='[em_22]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/23.gif" emoj='[em_23]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/24.gif" emoj='[em_24]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/25.gif" emoj='[em_25]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/26.gif" emoj='[em_26]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/27.gif" emoj='[em_27]' class="x66" style="width: 30px;height: 30px;"/>
+			            	</div>
+			            	<div>
+			            		<img src="qqFace/arclist/28.gif" emoj='[em_28]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/29.gif" emoj='[em_29]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/30.gif" emoj='[em_30]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/31.gif" emoj='[em_31]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/32.gif" emoj='[em_32]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/33.gif" emoj='[em_33]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/34.gif" emoj='[em_34]' class="x66" style="width: 30px;height: 30px;"/>
+			            	</div>
+			            	<div>
+			            		<img src="qqFace/arclist/35.gif" emoj='[em_35]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/36.gif" emoj='[em_36]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/37.gif" emoj='[em_37]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/38.gif" emoj='[em_38]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/39.gif" emoj='[em_39]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/40.gif" emoj='[em_40]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/41.gif" emoj='[em_41]' class="x66" style="width: 30px;height: 30px;"/>
+			            	</div>
+			            	<div id="bq">
+								<span index="1"></span>
+								<span class="on" index="2"></span>
+								<span index="3"></span>
+							</div>
+			            </div>
+			        </div>
+			        <div id="item3" class="mui-slider-item mui-control-content">
+			            <div id="" style="height: 200px;position: relative;">
+			            	<div>
+			            		<img src="qqFace/arclist/42.gif" emoj='[em_42]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/43.gif" emoj='[em_43]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/44.gif" emoj='[em_44]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/45.gif" emoj='[em_45]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/46.gif" emoj='[em_46]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/47.gif" emoj='[em_47]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/48.gif" emoj='[em_48]' class="x66" style="width: 30px;height: 30px;"/>
+			            	</div>
+			            	<div>
+			            		<img src="qqFace/arclist/49.gif" emoj='[em_49]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/50.gif" emoj='[em_50]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/51.gif" emoj='[em_51]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/52.gif" emoj='[em_52]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/53.gif" emoj='[em_53]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/54.gif" emoj='[em_54]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/55.gif" emoj='[em_55]' class="x66" style="width: 30px;height: 30px;"/>
+			            	</div>
+			            	<div>
+			            		<img src="qqFace/arclist/56.gif" emoj='[em_56]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/57.gif" emoj='[em_57]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/58.gif" emoj='[em_58]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/59.gif" emoj='[em_59]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/60.gif" emoj='[em_60]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/61.gif" emoj='[em_61]' class="x66" style="width: 30px;height: 30px;"/>
+			            		<img src="qqFace/arclist/62.gif" emoj='[em_62]' class="x66" style="width: 30px;height: 30px;"/>
+			            	</div>
+			            	
+			            	<div id="bq">
+			            		<span index="1"></span>
+								<span index="2"></span>
+								<span class="on" index="3"></span>
+							</div>
+			            </div>
+			        </div>
+			    </div>
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+		$(function () {
+			mui.init({
+			    beforeback: function() {
+			　　　　 //获得父页面的webview
+			        var list = plus.webview.currentWebview().opener();
+			　　　　 //触发父页面的自定义事件(refresh),从而进行刷新
+			        mui.fire(list, 'action');
+			        //返回true,继续页面关闭逻辑
+			        return true;
+			    }
+			});
+			mui.plusReady(function(){			
+				var member = plus.storage.getItem('member');
+				var members = JSON.parse(member);
+				var toid = plus.storage.getItem('order_id');
+				var fromid = members.id;
+				var money = plus.storage.getItem('money');
+				
+				
+				if(!money){
+					money = members.money;
+				}
+				$(".money").html(money)
+				var from_head = plus.storage.getItem('head'+fromid);
+				var to_head = plus.storage.getItem('head'+toid);
+				connect(fromid,toid);			
+				var ws,online,to_name,API_URL;
+				function connect(fromid,toid){
+					fromid = fromid;
+					toid = toid;
+					online = 0;
+	    			to_name='';
+	     			API_URL = "https://fcjsz.fosota.com/public/api/chat/";
+	     			ws =  new WebSocket("ws://fcjsz.fosota.com:7272");
+	      			ws.onopen = onopen(fromid);
+	      			ws.onmessage = onmessage;
+	      			ws.onclose = function() {
+			    	   console.log("连接关闭，定时重连");
+			           connect(fromid,toid);
+			        };
+			        ws.onerror = function() {
+			     	   console.log("出现错误");
+			        };
+	      	    }	
+	      	  
+			    function onopen(from_id){
+					if(!from_id){
+						mui.toast('请先登录账号')
+					}else{
+//						mui.toast('聊天链接成功!')
+					}
+				}
+	
+				function onmessage(e){
+	       			var message =  eval("("+e.data+")");
+				    switch (message.type){
+				        case "init":
+		                   var bild = '{"type":"bind","fromid":"'+fromid+'"}';
+		                   ws.send(bild);
+//		                   if(!from_head&&!to_head){
+		                   get_head(fromid,toid);
+		                   get_name(toid);
+		                   message_load();
+		                   var online = '{"type":"online","toid":"'+toid+'","fromid":"'+fromid+'"}';
+		                   ws.send(online);
+		                   changeNoRead();
+		                  return;
+		              	case "text":
+		                      if(toid==message.fromid) {
+								  var html = '<div class="fu" style="height: 65px;clear:both;">'+
+								    				'<img src="'+to_head+'" style="width: 50px;height: 50px;margin: 15px 5px 0 10px;float: left;"/>'+
+								    				'<div class="flatballoon1">' + replace_em(message.data) + '</div>'+
+								    			'</div>';
+		                          $("#asd").append(html);
+		                          $("#asd").height($("#asd").height()+50);
+						    	  ($('#asd').children(".fu:last-child")[0]).scrollIntoView();
+		                          changeNoRead();
+		                      }
+		                  	return;
+		              	case "say_img":
+		              		 if(toid==message.fromid) {
+//		              		 	alert(message.img_name)
+								  var html = '<div class="fu" style="height: 65px;clear:both;">'+
+								    				'<img src="'+to_head+'" style="width: 50px;height: 50px;margin: 15px 5px 0 10px;float: left;"/>'+
+								    				'<div class="flatballoon1"><img width="100em" src="https://fcjsz.fosota.com/public/uploads/chat_img/'+message.img_name+'"></div>'+
+								    			'</div>';
+								  $("#asd").append(html);
+		                          $("#asd").height($("#asd").height()+50);
+						    	  ($('#asd').children(".fu:last-child")[0]).scrollIntoView();
+		                          changeNoRead();
+		                     }
+			                  return;
+			            case "say_video":
+			                  if(toid==message.fromid) {
+								  var html = '<div class="fu" style="height: 65px;clear:both;">'+
+								    				'<img src="'+to_head+'" style="width: 50px;height: 50px;margin: 15px 5px 0 10px;float: left;"/>'+
+								    				'<div class="flatballoon1"><video width="200em" height="200em" controls><source type="video/mp4" src="https://fcjsz.fosota.com/public/uploads/chat_video/'+message.video_name+'"></video></div>'+
+								    			'</div>';
+								  $("#asd").append(html);
+		                          $("#asd").height($("#asd").height()+50);
+						    	  ($('#asd').children(".fu:last-child")[0]).scrollIntoView();
+		                          changeNoRead();
+		                     }
+			                  return;
+			            case "say_gift":
+			                  if(toid==message.fromid) {
+								  var html = '<div class="fu" style="height: 65px;clear:both;">'+
+								    				'<img src="'+to_head+'" style="width: 50px;height: 50px;margin: 15px 5px 0 10px;float: left;"/>'+
+								    				'<div class="flatballoon1">'+replace_em(message.gift_name)+'</div>'+
+								    			'</div>';
+								     			
+								  $("#asd").append(html);
+		                          $("#asd").height($("#asd").height()+50);
+						    	  ($('#asd').children(".fu:last-child")[0]).scrollIntoView();
+		                          changeNoRead();
+		                       }
+			                  return;
+		              	case "save":
+			                  save_message(message);
+			                      if(message.isread==1){
+			                            online=1;
+			                            if(!$(".mui-title").html()){
+			                          		$(".mui-title").html("<span style='color:green'>(在线)</span>");
+			                          	}
+			                      }else{
+			                            online=0;
+			                            if(!$(".mui-title").html()){
+			                          		$(".mui-title").html("<span style='color:red'>(不在线)</span>");
+			                          	}
+			                      }
+			                  return;
+		              	case  "online":
+			                  if(message.status==1){
+			                       online=1;
+			                       if(!$(".mui-title").html()){
+			                       	  $(".mui-title").html("<span style='color:green'>(在线)</span>");
+			                       }  
+			                  }else{
+			                     online=0;
+			                     if(!$(".mui-title").html()){
+			                      	$(".mui-title").html("<span style='color:red'>(不在线)</span>");
+			                     }
+			
+			                  }
+				    }
+				    update_message()
+				}	
+				
+				// 返回更新消息列表
+				function update_message(){
+//					mui.toast("返回")
+					var webview3 = plus.webview.getWebviewById("message-queues.html");
+					webview3.evalJS("action()")
+				}
+				
+				
+				//数据处理查看结果
+			    function replace_em(str){
+			        str = str.replace(/\</g,'&lt;');			
+			        str = str.replace(/\>/g,'&gt;');			
+			        str = str.replace(/\n/g,'<br/>');			
+			        str = str.replace(/\[em_([0-9]*)\]/g,'<img style="max-width:100px;max-height:100px;" src="qqFace/arclist/$1.gif" border="0" />');	
+			        str = str.replace(/\[tm_([0-9]*)\]/g,'<img style="max-width:150px;max-height:150px;" src="img/$1.png" border="0" />');	
+			        return str;
+			    }	
+				function get_head(fromid,toid){
+					mui.ajax(API_URL+"get_head",{
+						data:{"fromid":fromid,"toid":toid},
+						dataType:'json',//服务器返回json格式数据
+						type:'post',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						headers:{'Content-Type':'application/json'},	              
+						success:function(e){
+							from_head = e.from_head;
+							if((from_head).indexOf("/public") != -1){
+								from_head = "https://fcjsz.fosota.com"+from_head;
+							}
+							to_head = e.to_head;
+							if((to_head).indexOf("/public") != -1){
+								to_head = "https://fcjsz.fosota.com"+to_head;
+							}
+							
+							plus.storage.setItem('head'+fromid,from_head); 
+							plus.storage.setItem('head'+toid,to_head); 
+						},
+						error:function(xhr,type,errorThrown){
+							//异常处理；
+							console.log(type);
+						} 
+					});
+			    }
+
+				
+				function  get_name(toid){
+					mui.ajax(API_URL+"get_name",{
+						data:{"uid":toid},
+						dataType:'json',//服务器返回json格式数据
+						type:'post',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						headers:{'Content-Type':'application/json'},	              
+						success:function(e){
+//							alert(JSON.stringify(e))
+							 to_name = e.toname;
+							 if(to_name == null){
+							 	to_name = "无名游客"
+							 }
+//							 $('.mui-title').html(to_name);
+	                    	 $(".mui-title").html("<span style='color:#000'>"+to_name+"</span>"+$(".mui-title").html());
+						},error:function(xhr,type,errorThrown){
+							console.log(type);
+						}
+					});
+			    }
+				
+				function save_message(message){
+//					alert(JSON.stringify(message))
+					mui.ajax(API_URL+"save_message",{
+						data:message,
+						dataType:'json',//服务器返回json格式数据
+						type:'post',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						headers:{'Content-Type':'application/json'},	              
+						success:function(e){
+							console.log(e)
+						},error:function(xhr,type,errorThrown){
+							console.log(type);
+						}
+					});
+			    }
+				
+				function save_gift(message){
+			    	message = JSON.parse(message);
+					mui.ajax(API_URL+"save_gift",{
+						data:message,
+						dataType:'json',//服务器返回json格式数据
+						type:'post',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						headers:{'Content-Type':'application/json'},	              
+						success:function(e){
+							members.money = money-50;
+							plus.storage.setItem('money',members.money);
+							$(".back").removeClass("back");
+						},error:function(xhr,type,errorThrown){
+							console.log(type);
+						}
+					});
+			    } 
+
+			    function changeNoRead(){
+			    	mui.ajax(API_URL+"changeNoRead",{
+						data:{"fromid":fromid,"toid":toid},
+						dataType:'json',//服务器返回json格式数据
+						type:'post',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						headers:{'Content-Type':'application/json'},	              
+						success:function(e){},error:function(xhr,type,errorThrown){
+							console.log(type);
+						}
+					})
+			    }
+			    
+			    function message_load(){
+			    	mui.ajax(API_URL+"load",{
+			    		data:{"fromid":fromid,"toid":toid},
+			    		dataType:'json',//服务器返回json格式数据
+						type:'post',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						headers:{'Content-Type':'application/json'},	              
+						success:function(e){
+							$.each(e,function(index,content){
+								if(fromid==content.fromid){
+									if(content.type==1){
+										var html = '<div class="fu" style="height: 65px;clear:both;">'+
+				                                       '<img src="'+ from_head +'" style="width: 50px;height: 50px;float: right;margin: 15px 10px 0 5px;"/>'+
+					                                   '<div class="flatballoon">'+ replace_em(content.content) +'</div>'+
+				                                   '</div>';
+				                        $("#asd").append(html);     
+									}else if(content.type==2){
+										var html = '<div class="fu" style="height: 65px;clear:both;">'+
+				                                       '<img src="'+ from_head +'" style="width: 50px;height: 50px;float: right;margin: 15px 10px 0 5px;"/>'+
+					                                   '<div class="flatballoon"><img width="100em" data-preview-src="" data-preview-group="1" src="https://fcjsz.fosota.com/public/uploads/chat_img/'+content.content+'"></div>'+
+				                                   '</div>';
+				                        $("#asd").append(html);
+			                        }else if(content.type==3){
+			                        	var html = '<div class="fu" style="height: 65px;clear:both;">'+
+				                                       '<img src="'+ from_head +'" style="width: 50px;height: 50px;float: right;margin: 15px 10px 0 5px;"/>'+
+					                                   '<div class="flatballoon"><video width="200em" height="200em" controls><source type="video/mp4" src="https://fcjsz.fosota.com/public/uploads/chat_video/'+content.content+'"></video></div>'+
+				                                   '</div>';
+				                        $("#asd").append(html);
+			                        }else if(content.type==4){
+			                        	var html = '<div class="fu" style="height: 65px;clear:both;">'+
+				                                       '<img src="'+ from_head +'" style="width: 50px;height: 50px;float: right;margin: 15px 10px 0 5px;"/>'+
+					                                   '<div class="flatballoon">'+replace_em(content.content)+'</div>'+
+				                                   '</div>';
+				                        $("#asd").append(html);
+			                        }
+			                    }else{
+		                            if(content.type==1){
+		                            	
+										 var html = '<div class="fu" style="height: 65px;clear:both;">'+
+									    				'<img src="'+to_head+'" style="width: 50px;height: 50px;margin: 15px 5px 0 10px;float: left;"/>'+
+									    				'<div class="flatballoon1">' + replace_em(content.content) + '</div>'+
+									    			'</div>';
+				                        $("#asd").append(html);     
+									}else if(content.type==2){		
+										// 图片
+										var html = '<div class="fu" style="height: 65px;clear:both;">'+
+									    				'<img src="'+to_head+'" style="width: 50px;height: 50px;margin: 15px 5px 0 10px;float: left;"/>'+
+									    				'<div class="flatballoon1"><img width="100em" src="https://fcjsz.fosota.com/public/uploads/chat_img/'+content.content+'"></div>'+
+									    			'</div>';
+				                        $("#asd").append(html); 
+	                                }else if(content.type==3){
+	                                	// 小视频
+	                                    var html = '<div class="fu" style="height: 65px;clear:both;">'+
+									    				'<img src="'+to_head+'" style="width: 50px;height: 50px;margin: 15px 5px 0 10px;float: left;"/>'+
+									    				'<div class="flatballoon1"><video width="200em" height="200em" controls><source type="video/mp4" src="https://fcjsz.fosota.com/public/uploads/chat_video/'+content.content+'"></video></div>'+
+									    			'</div>';
+				                        $("#asd").append(html); 
+	                                }else if(content.type==4){
+	                                    var html = '<div class="fu" style="height: 65px;clear:both;">'+
+									    				'<img src="'+to_head+'" style="width: 50px;height: 50px;margin: 15px 5px 0 10px;float: left;"/>'+
+									    				'<div class="flatballoon1">'+replace_em(content.content)+'</div>'+
+									    			'</div>';
+				                        $("#asd").append(html); 
+	                                }
+			                    }
+			                });
+			                
+//			                // 加载完后显示
+//					        var currentView = plus.webview.currentWebview();
+//							currentView.show('slide-in-right', 300);
+//							plus.nativeUI.closeWaiting();
+
+
+//			                mui.toast($("#asd").height())
+			                $("#asd").height($("#asd").height()+70);
+						    ($('#asd').children(".fu:last-child")[0]).scrollIntoView();
+						},error:function(xhr,type,errorThrown){
+							console.log(type);
+						}
+			        });
+			        update_message()
+			        
+			        
+			        
+			    }
+			    
+				//点击发送消息
+				$('#footer_btn').on('click',function(){
+					var text = $('#footer_text').val();
+			        if(text==''){
+			            mui.toast('请输入内容!');
+			            return false;
+			        }
+	         		var message = '{"data":"'+text+'","type":"say","fromid":"'+fromid+'","toid":"'+toid+'"}';
+					var html = '<div class="fu" style="height: 65px;clear:both;">'+
+					              '<img src="'+ from_head +'" style="width: 50px;height: 50px;float: right;margin: 15px 10px 0 5px;"/>'+
+						          '<div class="flatballoon">'+ replace_em(text) +'</div>'+
+					            '</div>';
+					$("#asd").append(html);
+					$("#asd").height($("#asd").height()-230);
+					($('#asd').children(".fu:last-child")[0]).scrollIntoView();
+	         	    ws.send(message);
+	         	    
+	         	    
+	         	    
+			        $('#footer_text').val('');
+			        $('#footer_text').focus();
+			        update_message()
+				});  
+				
+				$("#contentd3 img").each(function(e){
+					$(this).on('click',function(index){
+						$("#footer_text").val($("#footer_text").val()+$(this).attr('emoj'));
+						$("#footer_text").focus();
+					})
+				});
+				
+				
+//				图片上传
+				$("#btn1").on('click',function(){
+					$("#file").click(); 
+				});
+		
+			    $("#file").change(function(){
+			    	var formdata = null;
+			        formdata = new FormData();
+			        formdata.append('fromid',fromid);
+			        formdata.append('toid',toid);
+			        formdata.append('online',online);
+			        formdata.append('file',$("#file")[0].files[0]);
+			        $.ajax({
+			            url:API_URL+"uploadimg",
+			            type:'POST',
+			            cache:false,
+			            data:formdata,
+			            dataType:'json',
+			            processData:false,
+			            contentType:false,
+			            success:function(data){
+			            	console.log(JSON.stringify(data));
+			                if(data.status=='ok'){
+								var html = '<div class="fu" style="height: 65px;clear:both;">'+
+		                                       '<img src="'+ from_head +'" style="width: 50px;height: 50px;float: right;margin: 15px 10px 0 5px;"/>'+
+			                                   '<div class="flatballoon"><img width="100em"  src="https://fcjsz.fosota.com/public/uploads/chat_img/'+data.img_name+'"></div>'+
+		                                   '</div>';
+		                        mui.toast(html);  
+			            		$("#asd").append(html);
+		                    	$("#asd").height($("#asd").height()+240);
+					            ($('#asd').children(".fu:last-child")[0]).scrollIntoView();
+		                    	var message = '{"data":"'+data.img_name+'","fromid":"'+fromid+'","toid":"'+toid+'","type":"say_img"}';
+		                    	$("#file").val("");
+		                    	ws.send(message);
+			                }else{
+			                    console.log(data.status);
+			                }
+			            },
+			            error:function(xhr,type,errorThrown){
+//							mui.toast(JSON.stringify(xhr));
+						}
+			        });
+			        update_message()
+			   });    
+			    //小视频上传
+			    $("#btn3").on('click',function(){
+			    	$("#videofile").click();
+			    });
+			    $("#videofile").change(function(){
+			    	var formdata = null;
+			        formdata = new FormData();
+			        formdata.append('fromid',fromid);
+			        formdata.append('toid',toid);
+			        formdata.append('online',online);
+			        formdata.append('file',$("#videofile")[0].files[0]);
+			        $.ajax({
+			            url:API_URL+"uploadvideo",
+			            type:'POST',
+			            cache:false,
+			            data:formdata,
+			            dataType:'json',
+			            processData:false,
+			            contentType:false,
+			            success:function(data,status,xhr){
+			                if(data.status=='ok'){
+								var html = '<div class="fu" style="height: 65px;clear:both;">'+
+		                                       '<video src="'+ from_head +'" style="width: 80px;height: 50px;float: right;margin: 15px 10px 0 5px;"></video>'+
+			                                   '<div class="flatballoon"><video width="240em" height="260em" src="https://fcjsz.fosota.com/public/uploads/chat_img/'+data.video_name+'"></video></div>'+
+		                                   '</div>';
+			            		$("#asd").append(html);
+		                    	$("#asd").height($("#asd").height()+250);
+					            ($('#asd').children(".fu:last-child")[0]).scrollIntoView();
+		                    	var message = '{"data":"'+data.video_name+'","fromid":"'+fromid+'","toid":"'+toid+'","type":"say_video"}';
+		                    	ws.send(message);
+			                }else{
+			                    console.log(data.status);
+			                }
+			            }
+			        });
+			        update_message()
+			    });
+			    
+			    $(".bg-gift").each(function(){
+			    	$(this).click(function(){
+						$(".money").html(money-50)
+			    		$(this).addClass("back").siblings().removeClass("back");
+			    		$(".mui-active").siblings().children().find('.back').removeClass('back')
+			    	});		    	
+			    }); 
+			    $("#zengsong").click(function(){
+			    	$("#img_x").click();
+			    	var gift = $(".back").children('input').attr('gift');
+			    	gift = JSON.parse(gift);
+			    	var html = '<div class="fu" style="height: 65px;clear:both;">'+
+		                                       '<video src="'+ from_head +'" style="width: 80px;height: 50px;float: right;margin: 15px 10px 0 5px;"></video>'+
+			                                   '<div class="flatballoon">'+replace_em(gift.gift)+'</div>'+
+		                                   '</div>';
+            		$("#asd").append(html);
+                	$("#asd").height($("#asd").height()+150);
+		            ($('#asd').children(".fu:last-child")[0]).scrollIntoView();
+                	var message = '{"data":"'+gift.gift+'","fromid":"'+fromid+'","toid":"'+toid+'","type":"say_gift","money":"'+gift.money+'"}';	
+                	save_gift(message);
+                	ws.send(message);
+			    }); 
+			           
+			});
+
+			var footer=document.getElementById("footer");
+			var footer1=document.documentElement.clientHeight-44;
+			var footer2=document.documentElement.clientHeight-284;
+			var footer3=document.documentElement.clientHeight;
+			var footer4=document.documentElement.clientHeight-240;
+			var footer9=document.documentElement.clientHeight-100;
+			var contentd1=document.getElementById("contentd1");
+			var footer_img2=document.getElementById("footer_img2");
+			var num=0;
+			var num1=0;
+			footer_img2.onclick=function(){
+				var T=document.getElementById("footer").style.top;
+				if(T=="initial"){
+					footer.style.top=footer8+"px";
+					contentd1.style.top=footer3+"px";
+				}
+				
+				if(footer.offsetTop==footer8){
+					footer.style.top=footer2+"px";
+					num1=1;
+					num1++;
+					if(num1%2==0){
+						var time2=setInterval(function(){
+							if(contentd1.offsetTop>=footer3){
+								clearInterval(time2);
+							}else{
+								contentd1.style.top=contentd1.offsetTop+8+"px";
+							}
+						},10);
+						document.getElementById("footer_img2").src="img/jia.png";
+					}else{
+						
+						var time3=setInterval(function(){
+							if(contentd1.offsetTop<=footer4){
+								clearInterval(time3);
+							}else{
+								contentd1.style.top=contentd1.offsetTop-8+"px";
+								
+							}
+						},10);
+						document.getElementById("footer_img2").src="img/jia1.png";
+					}
+				}else{
+				
+				num++;
+				if(num%2==0){
+					$("#asd").height($("#asd").height()-260);
+					($('#asd').children(".fu:last-child")[0]).scrollIntoView();
+					var time=setInterval(function(){
+						if(footer.offsetTop>=footer1){
+							clearInterval(time);
+						}else{
+							footer.style.top=footer.offsetTop+8+"px";
+						}
+					},10);
+				}else{
+					$("#asd").height($("#asd").height()+260);
+					($('#asd').children(".fu:last-child")[0]).scrollIntoView();
+					var time1=setInterval(function(){
+						if(footer.offsetTop<=footer2){
+							clearInterval(time1);
+						}else{
+							footer.style.top=footer.offsetTop-8+"px";
+						}
+					},10);
+				}
+			}
+				num4=1;
+				num4++;
+				if(num4%2==0){
+					var time7=setInterval(function(){
+						if(contentd3.offsetTop>=footer3){
+							clearInterval(time7);
+						}else{
+							contentd3.style.top=contentd3.offsetTop+8+"px";
+						}
+					},10);
+					document.getElementById("footer_img3").src="img/expression.png";
+					
+				}
+				
+				num1++;
+				if(num1%2==0){
+					var time2=setInterval(function(){
+						if(contentd1.offsetTop>=footer3){
+							clearInterval(time2);
+						}else{
+							contentd1.style.top=contentd1.offsetTop+8+"px";
+						}
+					},10);
+					document.getElementById("footer_img2").src="img/jia.png";
+				}else{
+					
+					var time3=setInterval(function(){
+						if(contentd1.offsetTop<=footer4){
+							clearInterval(time3);
+						}else{
+							contentd1.style.top=contentd1.offsetTop-8+"px";
+						}
+					},10);
+					document.getElementById("footer_img2").src="img/jia1.png";
+				}
+				
+
+			}
+			
+			var btn2=document.getElementById("btn2");
+			var footer5=document.documentElement.clientHeight;
+			var footer6=document.documentElement.clientHeight-380;
+			var num3=0;
+			btn2.onclick=function(){
+				num3++;
+				if(num3%2==0){
+					var time4=setInterval(function(){
+						if(contentd2.offsetTop>=footer3){
+							clearInterval(time4);
+						}else{
+							contentd2.style.top=contentd2.offsetTop+8+"px";
+						}
+					},10);
+				}else{
+					var time5=setInterval(function(){
+						if(contentd2.offsetTop<=footer6){
+							clearInterval(time5);
+						}else{
+							contentd2.style.top=contentd2.offsetTop-8+"px";
+						}
+					},10);
+				}
+			}
+			
+			
+			var img_x=document.getElementById("img_x");
+			img_x.onclick=function(){
+				num3++;
+				if(num3%2==0){
+					var time4=setInterval(function(){
+						if(contentd2.offsetTop>=footer3){
+							clearInterval(time4);
+						}else{
+							contentd2.style.top=contentd2.offsetTop+8+"px";
+						}
+					},10);
+				}
+			}
+			var num4=0;
+			var footer7=document.documentElement.clientHeight-200;
+			var footer8=document.documentElement.clientHeight-244;
+			var footer_img3=document.getElementById("footer_img3");
+			footer_img3.onclick=function(){						
+				if(footer.offsetTop==footer2){
+					footer.style.top=footer8+"px";
+					num4=2;
+					if(num4%2==0){
+						var time7=setInterval(function(){
+							if(contentd3.offsetTop>=footer3){
+								clearInterval(time7);
+							}else{
+								contentd3.style.top=contentd3.offsetTop+8+"px";
+							}
+						},10);
+						document.getElementById("footer_img3").src="img/expression.png";
+						
+						
+					}else{
+						
+						var time8=setInterval(function(){
+							if(contentd3.offsetTop<=footer7){
+								clearInterval(time8);
+							}else{
+								contentd3.style.top=contentd3.offsetTop-8+"px";
+							}
+						},10);
+						document.getElementById("footer_img3").src="img/expression1.png";
+						
+					}
+				}else{
+//					$("#asd").height($("#asd").height()+260);
+//					($('#asd').children(".fu:last-child")[0]).scrollIntoView();
+					num++;
+					if(num%2==0){
+						var time=setInterval(function(){
+							if(footer.offsetTop>=footer2){
+								clearInterval(time);
+							}else{
+								footer.style.top=footer.offsetTop+8+"px";
+							}
+						},10);
+					}else{
+						
+						var time1=setInterval(function(){
+							if(footer.offsetTop<=footer8){
+								clearInterval(time1);
+							}else{
+								footer.style.top=footer.offsetTop-8+"px";
+							}
+						},10);
+					}
+					
+					
+				}
+				
+				
+			
+				num1++;
+				if(num1%2==0){
+					$("#asd").height($("#asd").height()-240);
+					($('#asd').children(".fu:last-child")[0]).scrollIntoView();
+					var time2=setInterval(function(){
+						if(contentd1.offsetTop>=footer3){
+							clearInterval(time2);
+						}else{
+							contentd1.style.top=contentd1.offsetTop+8+"px";
+						}
+					},10);
+					document.getElementById("footer_img2").src="img/jia.png";
+				}else{
+					$("#asd").height($("#asd").height()+240);
+					($('#asd').children(".fu:last-child")[0]).scrollIntoView();
+				}
+				
+				num4=0;
+				num4++;
+				if(num4%2==0){
+					var time7=setInterval(function(){
+						if(contentd3.offsetTop>=footer3){
+							clearInterval(time7);
+						}else{
+							contentd3.style.top=contentd3.offsetTop+8+"px";
+						}
+					},10);
+					document.getElementById("footer_img3").src="img/expression.png";
+
+				}else{
+					var time8=setInterval(function(){
+						if(contentd3.offsetTop<=footer7){
+							clearInterval(time8);
+						}else{
+							contentd3.style.top=contentd3.offsetTop-8+"px";
+						}
+					},10);
+					document.getElementById("footer_img3").src="img/expression1.png";
+					
+				}
+				
+			}
+			
+			
+			
+			window.foc = function(){
+				$("#asd").height($("#asd").height()+300);
+				($('#asd').children(".fu:last-child")[0]).scrollIntoView();
+				footer.style.top="initial";
+				contentd1.style.top="initial";
+				contentd3.style.top="initial";
+				document.getElementById("footer_img2").src="img/jia.png";
+				document.getElementById("footer_img3").src="img/expression.png";
+			}
+		});	
+		
+		</script>
+		<script type="text/javascript">
+			mui.previewImage();
+		</script>
+	</body>
+
+</html>

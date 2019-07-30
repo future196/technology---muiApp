@@ -1,0 +1,283 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<script src="../js/mui.min.js"></script>
+		<script src="../lib/template.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			var skill_list = [];
+		</script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">发布攻城狮</h1>
+		</header>
+		<div class="mui-content">
+		    <form class="mui-input-group" onsubmit="return form_check()">
+			    <div class="mui-input-row">
+			        <label>攻城狮名称</label>
+			        <input id="developer-name" type="text" class="mui-input-clear" placeholder="请输入攻城狮名称">
+			    </div>
+		        <div class="mui-input-row">
+					<label>出场费</label>
+					<input id="developer-cost" type="text" class="mui-input-clear" placeholder="请输入最低出场费">
+		        </div>
+			    <div class="mui-input-row" style="height: 100px;height: auto;">
+			    	<label>擅长领域</label>
+			    	<div id="checked-box">
+			    	</div>
+			    	<script type="text/html" id="template1">
+						<% for(var i =0;i<list.length;i++){ %>
+							<font><input name="skill" value='"<%= i+1 %>":"<%= list[i].id %>"' type="checkbox" /><%= list[i].title %></font>
+						<%}%>
+					</script>
+
+			    </div>
+			    <div class="mui-input-row">
+			        <label>地区</label>
+			        <input id="developer-address" type="text" class="mui-input-clear" placeholder="请输入内容">
+			    </div>
+			    <div class="mui-input-row">
+			        <label>状态</label>
+			        <div class="radio-style">
+						<font><input name="status" value="1" type="radio" checked="checked"/>空闲</font>
+						<font><input name="status" value="0" type="radio" />忙碌</font>
+					</div>
+			    </div>
+			    <div style="height: 100px;" class="mui-input-row">
+			        <label>其它简介</label>
+			        <textarea id="developer-intro" type="text" rows="3" class="mui-input-clear" placeholder="请输入内容"></textarea>
+			    </div>
+			    <div class="button">
+					<button type="submit" id="release-developer">确认发布</button>
+				</div>
+			</form>
+		</div>
+		<script>
+			var user_id;
+			var developer_name;
+			var developer_cost;
+			var developer_skill;
+			var developer_address;
+			var developer_status;
+			var developer_info;
+			
+			// 获取擅长所有可选的领域
+			function request_skill(){
+				mui.ajax('https://fcjsz.fosota.com/public/api/index/index',{
+					data:{
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'get',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},	              
+					success:function(data){
+//							mui.alert(JSON.stringify(data))
+						//服务器返回响应，根据响应结果，分析是否登录成功；
+	//						mui.toast(data.msg)
+						if(data.code == 200){
+//							mui.toast("200")
+														
+							// 筛选数据
+							
+							for(var i = 0;i<data.data.ot4.length;i++){
+								skill_list.push(data.data.ot4[i])
+							}
+							skill_render()
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						mui.toast("请求失败，请检查网络状态")
+						console.log(type);
+					}
+				});
+			}
+			
+			// 渲染领域信息
+			function skill_render(){
+				var template1 = document.getElementById("template1").innerHTML;
+				document.getElementById("checked-box").innerHTML = template(template1,{list:skill_list});
+			}
+			
+			
+			mui.plusReady(function () {
+			    user_id = plus.storage.getItem("user_id")
+			    request_skill()
+			})
+			
+			// 检查表单
+			// 检查名称
+			function check_name(){
+				var name = document.getElementById("developer-name");
+				if(name.value == ""){
+					mui.toast("攻城狮名称不能为空")
+					return false;
+				}
+				else{
+					developer_name = name.value;
+					return true;
+				}
+			}
+			// 检查出场费
+			function check_cost(){
+				var cost = document.getElementById("developer-cost");
+				if(cost.value == ""){
+					mui.toast("出场费不能为空")
+					return false;
+				}
+				else{
+					developer_cost = cost.value;
+					return true;
+				}
+			}
+			// 检查地区
+			function check_address(){
+				var address = document.getElementById("developer-address");
+				if(address.value == ""){
+					mui.toast("地区不能为空")
+					return false;
+				}
+				else{
+					developer_address = address.value;
+					return true;
+				}
+			}
+			
+			// 状态
+			function get_status(){
+				var status = document.getElementsByName("status");
+				for(var i =0;i<status.length;i++){
+					if(status[i].checked){
+						developer_status = status[i].value;
+					}
+				}
+			}
+			
+			// 检查简介
+			function check_intro(){
+				var intro = document.getElementById("developer-intro");
+				if(intro.value == ""){
+					mui.toast("简介不能为空")
+					return false;
+				}
+				else{
+					developer_info = intro.value;
+					return true;
+				}
+			} 
+			// 检查擅长领域
+			function check_skill(){
+				var list = document.getElementsByName("skill");
+				var checked_list = [];
+				var v = '{';
+				for(var i = 0; i<list.length;i++){
+					if(list[i].checked){
+						v += list[i].value+',';
+						checked_list.push(list[i].value)
+					}
+				}
+				v = v.substring(0,v.length-1)
+				v +="}";
+				alert(v)
+
+				if(checked_list.length <= 0){
+					mui.toast("请至少选择一个擅长");
+					return false;
+				}
+				else{
+					developer_skill = v;
+					return true;
+				}
+			}
+			
+			// 执行所有检查
+			function form_check(){
+				var name_check = check_name();
+				var skill_check = check_skill();				
+				var cost_check = check_cost();
+				var intro_check = check_intro();
+				var address_check = check_address();
+				get_status();
+				if(name_check && skill_check && cost_check && intro_check && address_check){
+					alert(user_id+","+developer_name+","+developer_cost+","+developer_skill+","+developer_address+","+developer_status+","+developer_info)
+					release_need()
+					return false;
+				}
+				else{
+					return false;
+				}
+			}
+			
+			// 执行发布
+			function release_need(){
+				developer_skill = JSON.parse(developer_skill)
+//				alert(user_id+","+developer_name+","+developer_cost+","+developer_skill+","+developer_address+","+developer_status+","+developer_info)
+				mui.ajax('http://fcjsz.fosota.com/public/api/index/fbkh_add.html',{
+					data:{
+						uid:user_id,
+						name:developer_name,
+						budget:developer_cost,
+						lxing:developer_skill,
+						region:developer_address,
+						static:developer_status,
+						content:developer_info,
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					success:function(data){
+						if(data.code == 200){
+							mui.alert("发布成功","发布攻城狮");
+							mui.back();
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						mui.toast("请求失败，请检查网络状态")
+						console.log(type);
+					}
+				});
+			}
+			
+			
+		</script>
+		<style>
+			.radio-style font{
+				padding-right:10px;
+			}
+			.mui-input-row{
+				line-height: 40px;
+				margin-left: 0;
+			}
+			.button{
+				text-align: center;
+				padding: 20px;
+			}
+			#release-developer{
+				width: 95%;
+				margin: auto;
+				height: 40px;
+				background: deepskyblue;
+				color: white;
+				border: 0;
+				border-radius: 5px;
+			}
+			#checked-box{
+				display:table-cell;
+			}
+			#checked-box font{
+				margin-right: 5px;
+				white-space: nowrap;
+
+			}
+		</style>
+	</body>
+
+</html>

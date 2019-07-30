@@ -1,0 +1,328 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<script src="../js/mui.min.js"></script>
+		<script src="../lib/template.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			var order_list = []
+		</script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">攻城狮订单</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div id="template-area">
+				<div style="margin-top:50px">
+					<p style="text-align: center;">加载中...</p>
+					<p style="text-align: center;">如长时间未加载可尝试下拉刷新</p>
+				</div>
+			</div>
+			<script type="text/html" id="template1">
+				<% for(var i = 0;i<list.length;i++){ %>
+				<ul class="mui-table-view" style="margin:5px 0;">
+			    <li class="mui-table-view-cell">
+			    	<div class="request-content">
+				    	<div>
+	            		<p style="display: inline;"><%= list[i].name %></p>
+	            		<div style="display: inline;float: right;">
+	            			<div style="display: flex">
+	            				<%
+									function add0(m){return m<10?'0'+m:m }
+									function format()
+									{
+									//shijianchuo是整数，否则要parseInt转换
+									var time = new Date(list[i].create_time*1000);
+									var y = time.getFullYear();
+									var m = time.getMonth()+1;
+									var d = time.getDate();
+									var h = time.getHours();
+									var mm = time.getMinutes();
+									var s = time.getSeconds();
+									return y+'-'+add0(m)+'-'+add0(d)+' '+add0(h)+':'+add0(mm)+':'+add0(s);
+									}
+								%>
+	            				<p style="margin-left:5px ;"><%= format() %></p></p><p style="margin-left:5px ;"><%= list[i].region %></p>
+	            			</div>	            			
+	            		</div>
+	                </div>
+	                <div style="display: flex;"><p>出场费：</p><p><%= list[i].budget %>元起</p></div>
+	                <div>
+	                	<div style="display: inline;">
+	                		<div style="display:inline;">
+		                		<p style="display:inline;">擅长领域：</p>
+		                		<p style="display:inline;"><%= list[i].lxing %></p>
+		                	</div>
+	                	</div>
+			    	</div>
+			    	<div class="request_bottom">
+			    		<p style="display: inline;line-height: 40px;"><%= list[i].member_phone %></p>
+			    		<div id="rejected" style="display: inline;float: right;">
+			    			<p id="rejected-reason" style="color: red;line-height: 40px; style="display: inline;"" hidden="hidden">拒绝原因：<%= list[i].reason %></p>
+			    		</div>
+			    		<div style="display: inline;">
+			    			
+			    			<% if(list[i].verify_static == "申请中"){%>
+				    		<button class="receive" id="receive-<%= list[i].id %>" onclick="receive(<%= list[i].id %>)">接受</button>
+			    			<button class="reject" id="reject-<%= list[i].id %>" onclick="reject(<%= list[i].id %>)">拒绝</button>
+				    		<% }else if(list[i].verify_static == "已拒绝"){ %>
+				    		<button class="reject" >已拒绝</button>
+				    		<% }else if(list[i].verify_static == "已接受"){ %>
+				    		<button class="receive">已接受</button>
+				    		<% } %>	
+			    		</div>
+			    		
+			    	</div>
+			    </li>
+			</ul>
+				<% } %>
+			</script>
+			
+		    
+		</div>
+		<script>
+			var user_id;
+			var pages =1;
+			var action_id;
+			var isend = false;
+			var count;
+			
+			// 攻城狮订单数据获取
+			function request(){
+				mui.ajax('http://fcjsz.fosota.com/public/api/index/khdd.html',{
+						data:{
+							id:user_id,
+							page:pages,
+						},
+						dataType:'json',//服务器返回json格式数据
+						type:'post',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						headers:{'Content-Type':'application/json'},	              
+						success:function(data){							
+							if(data.code==200){
+//								alert(JSON.stringify(data))
+							var apply = data.data.apply;
+							count = data.data.count;
+								for(var i =0;i<apply.length;i++){
+									order_list.push(apply[i]);
+								}
+//								alert(release_list)
+								render()
+							}
+							else if(data.code == 404){
+								document.getElementById("template-area").innerHTML = '<div style="margin-top:50px"><p style="text-align: center;">暂无更多数据</p></div>'
+							}
+						},
+						error:function(xhr,type,errorThrown){
+							//异常处理；
+							mui.toast("请求失败,请检查网络状态")
+							console.log(type);
+							if(type === "timeout"){
+								mui('.mui-content').pullRefresh().endPullupToRefresh(false); // 结束上拉加载
+								mui('.mui-content').pullRefresh().endPulldown();	// 结束下拉加载
+							}
+						}
+					});
+			}
+			
+			mui.init({
+			    beforeback: function() {
+			　　　　 //获得父页面的webview
+			        var list = plus.webview.currentWebview().opener();
+			　　　　 //触发父页面的自定义事件(refresh),从而进行刷新
+			        mui.fire(list, 'refresh');
+			        //返回true,继续页面关闭逻辑
+			        return true;
+			    }
+			});
+			
+			mui.plusReady(function(){
+				user_id = plus.storage.getItem("user_id");
+				request()
+			})
+			
+			// 执行接受
+			function receive_request(){
+				mui.ajax('http://fcjsz.fosota.com/public/api/index/dealkhDd.html',{
+					data:{
+						id:action_id,
+						verify_static:1, // 1代表接受2代表拒绝
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},	              
+					success:function(data){			
+						
+						if(data.code==200){ 
+//							alert(JSON.stringify(data))
+							mui.toast("已接受") 
+							request(); // 接受成功后执行请求数据重新渲染数据
+							var reject = document.getElementById("reject-"+action_id);
+							var receive = document.getElementById("receive-"+action_id);
+							receive.innerHTML = "已接受";
+							reject.setAttribute("hidden","hidden")
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						console.log(type);
+					}
+				});
+			}
+			
+			// 执行拒绝
+			function reject_request(){
+				mui.ajax('http://fcjsz.fosota.com/public/api/index/dealkhDd.html',{
+					data:{
+						id:action_id,
+						verify_static:2, // 1代表接受2代表拒绝
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},	              
+					success:function(data){			
+						
+						if(data.code==200){ 
+//							alert(JSON.stringify(data))
+							mui.alert("已拒绝")
+							var reject = document.getElementById("reject-"+action_id);
+							var receive = document.getElementById("receive-"+action_id);
+							reject.innerHTML = "已拒绝";
+							receive.setAttribute("hidden","hidden")
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						console.log(type);
+					}
+				});
+			}
+			
+			// 接受
+			function receive(id){
+				action_id = id;
+				if(receive.innerHTML != "已接受"){
+					mui.confirm("确认接受吗？","系统提示",["确认","取消"],function(e){
+					if(e.index == 0){
+						mui.toast("正在提交..")
+						receive_request()
+					}
+				})
+				}
+			}
+			
+			// 拒绝
+			function reject(id){
+				action_id = id;
+				if(reject.innerHTML != "已接受"){
+					mui.confirm("确认拒绝吗？","系统提示",["确认","取消"],function(e){
+					if(e.index == 0){
+						mui.toast("正在提交..")
+						reject_request()
+					}
+				})
+				}
+			}
+			
+			
+			// 下拉刷新
+			mui.init({
+			  pullRefresh : {
+			    container:".mui-content",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+			    down : {
+			      style:'circle',//必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+			      color:'#2BD009', //可选，默认“#2BD009” 下拉刷新控件颜色
+			      height:'50px',//可选,默认50px.下拉刷新控件的高度,
+			      range:'100px', //可选 默认100px,控件可下拉拖拽的范围
+			      offset:'0px', //可选 默认0px,下拉刷新控件的起始位置
+			      auto: false,//可选,默认false.首次加载自动上拉刷新一次
+			      callback :function(){
+			      		order_list = []
+						request()
+			      		
+			      } //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+			    }
+			  }
+			});
+
+			
+			// 上拉加载更多
+			mui.init({
+			  pullRefresh : {
+			    container:".mui-content",//待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等
+			    up : {
+			      height:50,//可选.默认50.触发上拉加载拖动距离
+			      auto:false,//可选,默认false.自动上拉加载一次
+			      contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+			      contentnomore:'没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+			      callback :function(){
+						
+						var current_page = order_list.length/5
+						if(current_page >=1){
+							pages = current_page+1;
+						}
+//						else{
+//							isend = true;
+//							mui('.mui-content').pullRefresh().endPullupToRefresh(false); 
+//						}
+						if(order_list.length >= count){
+							mui.toast("没有更多数据了")
+							mui('.mui-content').pullRefresh().endPullupToRefresh(false); // 结束上拉加载
+						}else{
+//							mui.toast(count)
+							request();
+						}
+						
+			      	}
+			  }
+			}
+			  });
+			
+
+			// 渲染列表
+			function render(){
+//				mui.toast("render")
+				var template1 = document.getElementById("template1").innerHTML;
+				document.getElementById("template-area").innerHTML = template(template1,{list:order_list});
+				mui('.mui-content').pullRefresh().endPullupToRefresh(false); // 结束上拉加载
+				mui('.mui-content').pullRefresh().endPulldown();	// 结束下拉加载
+			}
+		</script>
+		
+		<style>
+			.request_bottom{
+				margin-top:5px;
+				border-top: 1px dashed #E8E8E8;
+			}
+			.reject{
+				border-radius: 30px;
+				background: red;
+				color: white;
+				border: 0;
+				float: right;
+				margin-top:5px;
+			}
+			.receive{
+				border-radius: 30px;
+				background: green;
+				color: white;
+				border: 0;
+				float: right;
+				margin: 0 5px;
+				margin-top:5px;
+			}
+		</style>
+	</body>
+
+</html>

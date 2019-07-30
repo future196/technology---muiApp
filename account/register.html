@@ -1,0 +1,354 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/jquery.min.js"></script>
+		<script type="text/javascript">
+			mui.init()
+		</script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		    <h1 class="mui-title">注册账号</h1>
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		</header>
+		<div class="mui-content">
+		    <div class="main-content">
+		    	<div class="mui-input-group" >
+				    <!--<div class="mui-input-row">
+				        <label>用户名</label>
+				    	<input type="text" class="mui-input-clear" placeholder="请输入用户名">
+				    </div>-->
+				    <div class="mui-input-row">
+				        <label>手机号码</label>
+				    	<input id="telephone" type="number" class="mui-input-clear" placeholder="请输入手机号码">
+				    </div>
+				    <div class="mui-input-row">
+				        <label>宅友昵称</label>
+				    	<input id="name" type="text" class="mui-input-clear" placeholder="请输入宅友昵称">
+				    </div>
+				    <div class="mui-input-row">
+				        <label>短信验证</label>
+				    	<input id="auth_code" maxlength="6"  style="float: left;" type="number" placeholder="请输入验证码">
+				    	<button class="authcode" onclick="get_code()">获取验证码</button>
+				    </div>
+				    <div class="mui-input-row">
+			        <label>设置密码</label>
+			        <input id="password" type="password" class="mui-input-password" placeholder="请输入密码">
+			    </div>
+			    <div class="mui-input-row">
+			        <label>确认密码</label>
+			        <input id="repeat_password" type="password" class="mui-input-password" placeholder="请再次输入密码">
+			    </div>
+				    <div class="mui-button-row">
+			        	<button id="register-button" type="button" class="mui-btn mui-btn-primary" onclick="form_check()">立即注册</button>	        
+			    	</div>
+				</div>
+				<div class="bottom">
+					<a>已有账号？</a>
+					<a id="login" style="color: red;">立即登录</a>
+				</div>
+		    </div>
+		    
+		</div>
+		<script>
+			var telephone_value;
+			var auth_code_value;
+			var passwd_value;
+			var name_value;
+			
+			// 检查手机号码
+			function telephone_check(){
+				var telephone = document.getElementById("telephone");
+				if(telephone.value == ""){
+					mui.toast("手机号码不能为空")
+					return false;
+				}
+				else if(telephone.value.length == 11){
+					telephone_value = telephone.value;
+					return true;	
+				}
+				else{
+					mui.toast("手机号码格式不正确")
+					return false;
+				}
+			}
+			
+			// 检查宅友昵称
+			function name_check(){
+				var name = document.getElementById("name");
+				if(name.value == ""){
+					mui.toast("宅友昵称不能为空")
+					return false;
+				}
+				else if(name.value.length > 7){
+					mui.toast("宅友昵称不能超过7位")
+					return false;
+				}
+				else{
+					name_value = name.value;
+					return true;	
+					
+				}
+			}
+				
+			// 短信验证码
+			function auth_code_check(){
+				if(auth_code_value == ""){
+					mui.toast("您还没有获取验证码")
+				}else{
+					var auth_code = document.getElementById("auth_code");
+					if(auth_code.value == ""){
+						mui.toast("验证码不能为空")
+						return false;
+					}
+					else if(auth_code.value.length == 6){
+						alert(auth_code.value)
+						if(auth_code.value == auth_code_value){
+							mui.toast("验证码正确")
+							return true;
+						}
+						else{
+							mui.toast("验证码错误")
+							return false;
+						}
+					}
+					else{	
+						mui.toast("验证码格式为6位")
+						return false;
+					}
+				}	
+			}
+			
+			// 检查密码输入
+			function password_check(){
+				var passwd = document.getElementById("password");
+				if(passwd.value == ""){
+					mui.toast("密码不能为空")
+					return false;
+				}
+				else if(passwd.value.length < 6){
+					mui.toast("密码不能低于6位")
+					return false;
+				}
+				else{
+					passwd_value = passwd.value;
+					return true;
+				}
+			}
+			
+			// 检查确认密码
+			function repeat_password_check(){
+				var passwd = document.getElementById("repeat_password");
+				var passwd1 = document.getElementById("password").value;
+				if(passwd.value == ""){
+					mui.toast("密码不能为空")
+					return false;
+				}
+				else if(passwd.value == passwd1){
+					
+					return true;
+				}
+				else{
+					mui.toast("两次输入密码不一致")
+					return false;
+				}
+			}
+		
+			// 检查表单所有数据
+			function form_check(){
+				var telephone_status = telephone_check();
+				var auth_code_status = auth_code_check();
+				var password_status = password_check();
+				var repeat_password_status = repeat_password_check();
+				var name_status = name_check()
+				if(telephone_status && auth_code_status && password_status && repeat_password_status && name_status){
+					
+					register_request()
+				}
+				else{
+					alert("信息不正确")
+				}
+			}
+			
+			
+		// 获取经纬度（javascript百度地图api）
+		function long_lati_request(){
+			plus.geolocation.getCurrentPosition(translatePoint,function(e){
+//              mui.toast("异常:" + e.message);
+   			});
+		}
+		function translatePoint(position){
+			currentLon = position.coords.longitude;
+		 	currentLat= position.coords.latitude;
+		 	location_addr = currentLon +","+currentLat;
+		 	update_location()
+		}
+		
+		// 更新经纬度
+		function update_location(){
+			mui.ajax('http://fcjsz.fosota.com/public/api/index/update_location.html',{
+				data:{
+					id:plus.storage.getItem("user_id"),
+					location:location_addr,
+				},
+				dataType:'json',//服务器返回json格式数据
+				type:'post',//HTTP请求类型
+				timeout:10000,//超时时间设置为10秒；
+				headers:{'Content-Type':'application/json'},	              
+				success:function(data){	
+//					alert(JSON.stringify(data))
+					if(data.code == 200){
+						
+					}
+					
+				},
+				error:function(xhr,type,errorThrown){
+					//异常处理；
+					console.log(type);
+				}
+			});
+		}
+			
+			// 执行注册请求
+			function register_request(){
+//				alert(telephone_value+","+passwd_value+","+auth_code_value)
+				mui.toast("请求中..")
+				mui.ajax('http://fcjsz.fosota.com/public/api/login/register.html',{
+					data:{
+						phone:telephone_value,
+						password:passwd_value,
+						code:auth_code_value,
+						member_name:name_value,
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},	              
+					success:function(data){
+//						alert(JSON.stringify(data))
+						if(data.code == 200){
+							plus.storage.setItem("user_telephone",telephone_value)
+							mui.alert("注册成功！","注册账号")
+							long_lati_request() // 更新经纬度
+							mui.back()
+						}else if(data.code == 404){
+							mui.alert("验证码失效，请重新获取！","注册账号")
+						}
+						else if(data.code == 405){
+							mui.alert("验证码错误！","注册账号")
+						}
+						else if(data.code == 406){
+							mui.alert("注册失败！","注册账号")
+						}
+						else if(data.code == 407){
+							mui.alert("账号已存在！请密码登录","注册账号")
+							mui.back();
+						}
+						else{
+							mui.alert("未知错误！","注册账号")
+						}
+						
+					   
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						alert(type)
+						console.log(type);
+					}
+				});
+			}
+			
+			// 验证码倒计时
+			function code_time(){
+	
+				    var that = $(".authcode")		   
+				    var timeo = 60;
+				    var timeStop = setInterval(function(){
+				        timeo--;
+				        if (timeo>0) {
+				            that.text('重新获取'+timeo +'s');
+				            that.attr('disabled','disabled');//禁止点击
+				        }else{
+				            timeo = 60;//当减到0时赋值为60
+				            that.text('获取验证码'); 
+				            clearInterval(timeStop);//清除定时器
+				            that.removeAttr('disabled');//移除属性，可点击
+				        }
+				    },1000)
+
+			}
+			
+			// 获取验证码
+			function get_code(){
+				var telephone_status = telephone_check();
+				if(telephone_status){
+					mui.toast("正在获取验证码")
+					mui.ajax('http://fcjsz.fosota.com/public/api/login/getcode.html',{
+						data:{
+							phone:telephone_value,
+						},
+						dataType:'json',//服务器返回json格式数据
+						type:'post',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						headers:{'Content-Type':'application/json'},	              
+						success:function(data){
+							if(data.code == 200){
+								mui.alert("验证码已发送")
+								auth_code_value = data.data;
+//								alert(JSON.stringify(data))
+								code_time()
+							}
+						},
+						error:function(xhr,type,errorThrown){
+							//异常处理；
+							alert(type)
+							console.log(type);
+						}
+					});
+				}
+				else{
+					mui.alert("请完善手机号码","注册账号")
+				}
+			}
+
+			// 登录页面跳转
+			var login = document.getElementById("login");
+			login.addEventListener("tap",function(){
+				mui.openWindow({
+					url:"login.html",
+					id:"login.html",
+					createNew:true,
+				})
+			});
+		</script>
+		<style>
+			.main-content{
+				margin:60px 30px;
+			}
+			#register-button{
+				width: 90%;
+			}
+			.bottom{
+				margin: 3px;
+				text-align: center;
+			}
+			.authcode{
+				background: deepskyblue;
+				color: white;
+				border: 0;
+				height: 100%;
+				/* float: right; */
+				position: absolute;
+				right: 0;
+			}
+		</style>
+	</body>
+
+</html>

@@ -1,0 +1,308 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init()
+		</script>
+	</head>
+
+	<body>
+		<div class="mui-content">
+			
+			<header class="mui-bar mui-bar-nav">
+			    <h1 class="mui-title">发现</h1>
+			    <span class="mui-icon mui-icon-plus" style="float: right;" onclick="add()"></span>
+			</header>
+			<div id="button-group">
+				<div id="cricle" onclick="select(this)">宅友圈</div>
+				<div id="hot" onclick="select(this)">热销程序</div>
+				<div id="friend" onclick="select(this)">附近宅友</div>
+			</div>
+			<div class="main">
+				<div id="title">
+		    	<div id="icon">
+		    		<img src="../img/user-icon.jpg">
+		    		<p>想着想着就忘了</p>
+		    	</div>
+		    	<div id="personal-money">
+		    		<img src="../img/coin.png"><p class="fa fa-universal-access">宅币：<font>0</font></p>
+		    		<button type="button" class="mui-btn mui-btn-success mui-btn-outlined">充值</button>
+		    	</div>
+		    	
+		    </div>
+		    <div id="content">
+		    	<div class="content-list">
+			    	<div class="content-message">
+			    		<img src="../img/1.jpg">	
+			    		<div class="content-text"> 
+			    			<p>幸运水果机</p>
+			    			<p>一款怀旧的幸运水果机游戏</p>
+			    		</div>
+			    		<button type="button" class="mui-btn mui-btn-success">进入</button>
+			    	</div>
+		    	</div>
+		    	<div class="content-list">
+			    	<div class="content-message">
+			    		<img src="../img/1.jpg">	
+			    		<div class="content-text"> 
+			    			<p>幸运水果机</p>
+			    			<p>一款怀旧的幸运水果机游戏</p>
+			    		</div>
+			    		<button type="button" class="mui-btn mui-btn-success">进入</button>
+			    	</div>
+		    	</div>
+		    	<div class="content-list">
+			    	<div class="content-message">
+			    		<img src="../img/1.jpg">	
+			    		<div class="content-text"> 
+			    			<p>幸运水果机</p>
+			    			<p>一款怀旧的幸运水果机游戏</p>
+			    		</div>
+			    		<button type="button" class="mui-btn mui-btn-success">进入</button>
+			    	</div>
+		    	</div>
+		    	<div class="content-list">
+			    	<div class="content-message">
+			    		<img src="../img/1.jpg">	
+			    		<div class="content-text"> 
+			    			<p>幸运水果机</p>
+			    			<p>一款怀旧的幸运水果机游戏</p>
+			    		</div>
+			    		<button type="button" class="mui-btn mui-btn-success">进入</button>
+			    	</div>
+		    	</div>
+		    	<div class="content-list">
+			    	<div class="content-message">
+			    		<img src="../img/1.jpg">	
+			    		<div class="content-text"> 
+			    			<p>幸运水果机</p>
+			    			<p>一款怀旧的幸运水果机游戏</p>
+			    		</div>
+			    		<button type="button" class="mui-btn mui-btn-success">进入</button>
+			    	</div>
+		    	</div>
+		    	<div class="content-list">
+			    	<div class="content-message">
+			    		<img src="../img/1.jpg">	
+			    		<div class="content-text"> 
+			    			<p>幸运水果机</p>
+			    			<p>一款怀旧的幸运水果机游戏</p>
+			    		</div>
+			    		<button type="button" class="mui-btn mui-btn-success">进入</button>
+			    	</div>
+		    	</div>
+		    	<div class="content-list">
+			    	<div class="content-message">
+			    		<img src="../img/1.jpg">	
+			    		<div class="content-text"> 
+			    			<p>幸运水果机</p>
+			    			<p>一款怀旧的幸运水果机游戏</p>
+			    		</div>
+			    		<div class="button">
+			    			<button type="button" class="mui-btn mui-btn-success">进入</button>
+			    		</div>
+			    		
+			    	</div>
+		    	</div>
+		    	<div class="content-list">
+			    	<div class="content-message">
+			    		<img src="../img/1.jpg">	
+			    		<div class="content-text"> 
+			    			<p>幸运水果机</p>
+			    			<p>一款怀旧的幸运水果机游戏</p>
+			    		</div>
+			    		<button type="button" class="mui-btn mui-btn-success">进入</button>
+			    	</div>
+		    	</div>
+			</div>
+		    
+		    <div id="sheet1" class="mui-popover mui-popover-bottom mui-popover-action ">
+			    <!-- 可选择菜单 -->
+			    <ul class="mui-table-view">
+			      	<li class="mui-table-view-cell">
+			        	<a href="#">发布我的信息</a>
+			      	</li>
+			    </ul>
+			    	<!-- 取消菜单 -->
+			    <ul class="mui-table-view">
+			      	<li class="mui-table-view-cell">
+			        	<a href="#sheet1"><b>取消</b></a>
+			      	</li>
+			    </ul>
+			</div>
+		    
+		</div>
+		<script>
+			mui.init({
+			  pullRefresh : {
+			    container:".mui-content",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+			    down : {
+			      style:'circle',//必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+			      color:'#2BD009', //可选，默认“#2BD009” 下拉刷新控件颜色
+			      height:'50px',//可选,默认50px.下拉刷新控件的高度,
+			      range:'100px', //可选 默认100px,控件可下拉拖拽的范围
+			      offset:'0px', //可选 默认0px,下拉刷新控件的起始位置
+			      auto: false,//可选,默认false.首次加载自动上拉刷新一次
+			      callback :function(){
+			      		setTimeout(
+			      			function(){
+			      				mui('.mui-content').pullRefresh().endPulldown();
+			      				mui.toast("刷新完成")
+			      			},1000);
+			      } //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+			    }
+			  }
+			});
+			
+			mui.init({
+			  pullRefresh : {
+			    container:".mui-content",//待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等
+			    up : {
+			      height:50,//可选.默认50.触发上拉加载拖动距离
+			      auto:false,//可选,默认false.自动上拉加载一次
+			      contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+			      contentnomore:'没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+			      callback :function(){
+			      	setTimeout(
+			      			function(){
+								mui('.mui-content').pullRefresh().endPullupToRefresh(false);
+			      				mui.toast("加载完成")
+			      			},1000);
+
+			      	}
+			  }
+			}
+			  });	
+			  
+			  
+			function select(obj){
+				plus.webview.hide("hot.html");
+				plus.webview.show(obj.id + ".html")	// 显示当前点击页面
+			}
+			
+			function add(){
+				mui('#sheet1').popover('toggle');
+			}
+		</script>
+		<style>
+			body{
+				background: white;
+				margin-bottom: 80px;
+			}
+			
+			.main{
+				margin-top: 90px;
+			}
+			
+			.mui-content{
+				background: white;
+			}
+			#icon{
+				display: flex;
+				width: 100%;
+				height: 60px;
+			}
+			#icon img{
+				width: 60px;
+				height: 60px;
+			}
+			#icon p{
+				line-height: 60px;
+				margin-left:10px;
+			}
+			
+			#personal-money{
+				display: flex;
+				height: 40px;
+			}
+			#personal-money p{
+				line-height: 40px;
+				width: 70%;
+			}
+			#personal-money img{
+				height: 20px;
+				width: 20px;
+				margin: 10px;
+			}
+			#title{
+				margin:10px;
+			}
+			#content{
+				width: 100%;
+				padding: 10px;
+			}
+			.content-list{
+				height: 70px;
+				width: 100%;
+				border: 3px solid #C0C0C0;
+				border-radius: 10px;
+				margin-bottom: 10px;
+			}
+			.content-message{
+				display: flex;
+				width: 100%;
+				height:50px;
+				padding-top: 7px;
+				padding-left: 10px;
+				padding-right: 10px;
+			}
+			.content-message img{
+				width: 50px;
+				height:50px;
+				margin-right:5px;
+			}
+			.content-message button{
+				width: 50px;
+				height:30px;
+				margin-top: 10px;
+			}
+			.content-text{
+				width: 65%;
+			}
+			
+			.content-text p{
+				overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+			}
+			
+			
+			#button-group{
+				width: 100%;
+				height: 40px;
+				margin-top:45px;
+				display: flex;
+				position: fixed;
+				top:0;
+				background: white;
+				z-index: 9;
+			}
+			#button-group div{
+				width: 33.3%;
+				text-align: center;
+				line-height: 40px;
+				border-radius: 4px;
+				
+			}
+			#cricle{
+				background: deepskyblue;
+				color: white;
+			}
+			#hot{
+				background: white;
+				color: deepskyblue;
+			}
+			#friend{
+				background: deepskyblue;
+				color: white;
+			}
+		</style>
+	</body>
+
+</html>
